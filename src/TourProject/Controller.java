@@ -1,12 +1,13 @@
 package TourProject;
 
+import TourProject.model.Tour;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -20,6 +21,13 @@ public class Controller implements Initializable {
     public TextField inputSearch;
     public TableView toursListing;
     public TableColumn tournameColumn;
+    public Label tourLabel;
+    public TableView tourLogs;
+    public TableColumn tourDate;
+    public TableColumn tourDuration;
+    public TableColumn tourDistance;
+    public TableColumn tourAvgSpeed;
+    public Label tourDescription;
 
     public Controller()
     {
@@ -31,9 +39,29 @@ public class Controller implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         System.out.println("Controller init");
 
-        tournameColumn.setCellValueFactory(new PropertyValueFactory<>("tourName"));
-        toursListing.setItems(viewModel.getToursListing());
 
+        tournameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        tourDate.setCellValueFactory(new PropertyValueFactory<>("date"));
+        tourDuration.setCellValueFactory(new PropertyValueFactory<>("duration"));
+        tourDistance.setCellValueFactory(new PropertyValueFactory<>("distance"));
+        tourAvgSpeed.setCellValueFactory(new PropertyValueFactory<>("averageSpeed"));
+
+        toursListing.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                viewModel.setSelectedTour((Tour) toursListing.getSelectionModel().getSelectedItem());
+                tourLogs.setItems(viewModel.getTourLogs());
+            }
+        });
+
+        viewModel.setupToursListing();
+
+        toursListing.setItems(viewModel.getToursListing());
+        tourLogs.setItems(viewModel.getTourLogs());
+
+        tourDescription.textProperty().bindBidirectional(viewModel.tourDescription());
+        tourLabel.textProperty().bindBidirectional(viewModel.tourLabel());
         inputSearch.textProperty().bindBidirectional(viewModel.inputProperty());
     }
 

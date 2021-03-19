@@ -1,6 +1,9 @@
 package TourProject;
 
+import TourProject.business.MainBusiness;
 import TourProject.model.Tour;
+import TourProject.model.TourLog;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -9,44 +12,56 @@ import javafx.collections.ObservableList;
 public class MainViewModel {
     // http://openbook.rheinwerk-verlag.de/javainsel/12_004.html
     private final StringProperty input = new SimpleStringProperty("");
+    private final StringProperty tourLabel = new SimpleStringProperty("");
+    private final StringProperty tourDescription = new SimpleStringProperty("");
 
-    private final ObservableList<Tour> toursListing =
-            FXCollections.observableArrayList(
-                    new Tour("Tour 1"),
-                    new Tour("Tour 2"),
-                    new Tour("Tour 3")
-            );
-    private final ObservableList<Tour> defaultToursListing =
-            FXCollections.observableArrayList(
-                    new Tour("Tour 1"),
-                    new Tour("Tour 2"),
-                    new Tour("Tour 3")
-            );
-
+    private final ObservableList<Tour> toursListing = FXCollections.observableArrayList();
+    private final ObservableList<Tour> selectedTour = FXCollections.observableArrayList();
+    private final ObservableList<TourLog> tourLogs = FXCollections.observableArrayList();
 
     public StringProperty inputProperty() {
-        System.out.println("VM: get input prop");
         return input;
     }
 
+    public Property<String> tourLabel() {
+        return tourLabel;
+    }
+
+    public Property<String> tourDescription() {
+        return tourDescription;
+    }
+
+    public void setupToursListing() {
+        toursListing.addAll(MainBusiness.getTours());
+    }
+
+    public ObservableList<Tour> getSelectedTour() {
+        return selectedTour;
+    }
 
     public ObservableList getToursListing() {
         return toursListing;
     }
 
+    public ObservableList getTourLogs() {
+        return tourLogs;
+    }
+
     public void searchButtonPressed() {
-        String text = input.get().toLowerCase().trim();
-
         toursListing.clear();
-        boolean isEmpty = text.equals("");
+        toursListing.addAll(MainBusiness.search(input.get()));
+    }
 
+    public void setSelectedTour(Tour selectedItem) {
+        MainBusiness.setSelectedTour(selectedItem);
+        tourLabel.setValue(selectedItem.getName());
+        tourDescription.setValue(selectedItem.getDescription());
 
-        for (int i = 0; i < defaultToursListing.size(); i++) {
-            if (isEmpty || defaultToursListing.get(i).getTourName().toLowerCase().contains(text)) {
-                toursListing.add(defaultToursListing.get(i));
-            }
+        tourLogs.clear();
+        if (selectedItem.getTourLogs() != null) {
+            tourLogs.addAll(selectedItem.getTourLogs());
         }
-
-
+        selectedTour.clear();
+        selectedTour.add(selectedItem);
     }
 }

@@ -53,6 +53,9 @@ public class MainViewModel {
     }
 
     public void setSelectedTour(Tour selectedItem) {
+        if (selectedItem == null) {
+            return;
+        }
         MainBusiness.setSelectedTour(selectedItem);
         tourLabel.setValue(selectedItem.getName());
         tourDescription.setValue(selectedItem.getDescription());

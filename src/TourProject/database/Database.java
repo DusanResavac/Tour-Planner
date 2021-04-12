@@ -18,6 +18,8 @@ public class Database {
 
     }
 
+    // TODO: Implement Interface for DAL
+
     public static Database getInstance() {
         if (instance == null) {
             instance = new Database();
@@ -36,7 +38,7 @@ public class Database {
 
     private List<Tour> getData() {
         Tour tour1 = new Tour("Tour 1 - France", "Die Tour de France [ˌtuʀdəˈfʀɑ̃ːs], auch Grande Boucle [gʀɑ̃dˈbukl] (französisch für Große Schleife) genannt, ist das bekannteste und wohl bedeutendste Straßenradrennen der Welt. Sie zählt neben dem Giro d’Italia und der Vuelta a España zu den Grand Tours. ");
-        Tour tour2 = new Tour("Tour 2 - Germany", "Eine tolle Fahrradtour in Deutschland");
+        Tour tour2 = new Tour("Tour 2 - Germany", "Eine tolle Fahrradtour durch Deutschland");
         Tour tour3 = new Tour("Tour 3 - Brazil", "Ausgezeichnetes Sightseeing");
 
         List<TourLog> tourLogs = new ArrayList<>(){{

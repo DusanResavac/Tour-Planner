@@ -10,6 +10,9 @@ public class MainBusiness {
     private static ObservableList<Tour> tours;
     private static Tour selectedTour;
 
+    // TODO: Implement Constructor - move from static implementation to instance-based
+
+
     public static ObservableList<Tour> getTours () {
         if (tours == null) {
             tours = FXCollections.observableArrayList(
@@ -32,9 +35,9 @@ public class MainBusiness {
         ObservableList<Tour> tempTours = FXCollections.observableArrayList();
         boolean isEmpty = text.equals("");
 
-        for (int i = 0; i < tours.size(); i++) {
-            if (isEmpty || tours.get(i).getName().toLowerCase().contains(text)) {
-                tempTours.add(tours.get(i));
+        for (Tour tour : tours) {
+            if (isEmpty || tour.getName().toLowerCase().contains(text)) {
+                tempTours.add(tour);
             }
         }
 

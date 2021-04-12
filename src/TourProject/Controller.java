@@ -47,6 +47,8 @@ public class Controller implements Initializable {
         tourDistance.setCellValueFactory(new PropertyValueFactory<>("distance"));
         tourAvgSpeed.setCellValueFactory(new PropertyValueFactory<>("averageSpeed"));
 
+
+
         toursListing.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -60,6 +62,10 @@ public class Controller implements Initializable {
         toursListing.setItems(viewModel.getToursListing());
         tourLogs.setItems(viewModel.getTourLogs());
 
+
+        /*
+        TODO: add binding https://stackoverflow.com/questions/18607624/how-to-bind-a-javafx-label-to-the-selected-item-from-a-listview/20656273#20656273
+        toursListing.getSelectionModel().selectedItemProperty().*/
         tourDescription.textProperty().bindBidirectional(viewModel.tourDescription());
         tourLabel.textProperty().bindBidirectional(viewModel.tourLabel());
         inputSearch.textProperty().bindBidirectional(viewModel.inputProperty());

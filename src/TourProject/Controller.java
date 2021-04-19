@@ -1,5 +1,6 @@
 package TourProject;
 
+import TourProject.DataAccessLayer.Database;
 import TourProject.model.Tour;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -7,15 +8,15 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
 
     // create custom viewmodel
-    public MainViewModel viewModel = new MainViewModel();
+    public MainViewModel viewModel = new MainViewModel(new Database());
 
     // add fx:id and use intelliJ to create field in controller
     public TextField inputSearch;
@@ -80,5 +81,9 @@ public class Controller implements Initializable {
     public void search (ActionEvent actionEvent) {
         viewModel.searchButtonPressed();
         toursListing.setItems(viewModel.getToursListing());
+    }
+
+    public void editTour(ActionEvent actionEvent) throws IOException {
+        viewModel.editTour();
     }
 }

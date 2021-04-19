@@ -4,7 +4,7 @@ import javafx.beans.property.*;
 
 import java.util.Date;
 
-public class TourLog {
+public class TourLog implements Prototype {
 
     private Date date = null;
     private int duration;
@@ -16,6 +16,13 @@ public class TourLog {
         this.duration = duration;
         this.distance = distance;
         this.averageSpeed = averageSpeed;
+    }
+
+    public TourLog(TourLog tourLog) {
+        date = tourLog.date;
+        duration = tourLog.duration;
+        distance = tourLog.distance;
+        averageSpeed = tourLog.averageSpeed;
     }
 
     public Date getDate() {
@@ -58,5 +65,10 @@ public class TourLog {
                 ", distance=" + distance +
                 ", averageSpeed=" + averageSpeed +
                 '}';
+    }
+
+    @Override
+    public Prototype clone() {
+        return new TourLog(this);
     }
 }

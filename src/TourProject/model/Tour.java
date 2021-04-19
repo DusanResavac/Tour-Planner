@@ -1,18 +1,52 @@
 package TourProject.model;
 
-import javafx.beans.property.*;
-import javafx.collections.ObservableList;
 
-public class Tour {
+import java.util.ArrayList;
+import java.util.List;
+
+public class Tour implements Prototype {
 
     private String name;
     private String description;
-    private ObservableList<TourLog> tourLogs;
+    private Double distance;
+    private String imagePath = null;
+    private List<TourLog> tourLogs;
 
 
-    public Tour(String tourName, String description) {
+    public Tour(String tourName, String description, Double distance, String imagePath) {
         this.name = tourName;
         this.description = description;
+        this.distance = distance;
+        this.imagePath = imagePath;
+    }
+
+    public Tour(String tourName, String description, Double distance) {
+        this.name = tourName;
+        this.description = description;
+        this.distance = distance;
+    }
+
+    public Tour(Tour tour) {
+        this.name = tour.name;
+        this.description = tour.description;
+        this.tourLogs = new ArrayList<>();
+        tour.tourLogs.forEach(log -> this.tourLogs.add((TourLog) log.clone()));
+    }
+
+    public Double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(Double distance) {
+        this.distance = distance;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 
     public String getName() {
@@ -31,18 +65,21 @@ public class Tour {
         this.description = description;
     }
 
-    public ObservableList<TourLog> getTourLogs() {
+    public List<TourLog> getTourLogs() {
         return tourLogs;
     }
 
-    public void setTourLogs(ObservableList<TourLog> tourLogs) {
+    public void setTourLogs(List<TourLog> tourLogs) {
         this.tourLogs = tourLogs;
     }
 
     @Override
     public String toString() {
         return "Tour{" +
-                "tourName=" + name +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", distance=" + distance +
+                ", imagePath='" + imagePath + '\'' +
                 ", tourLogs=" + tourLogs +
                 '}';
     }
@@ -63,5 +100,10 @@ public class Tour {
         int result = name != null ? name.hashCode() : 0;
         result = 31 * result + (tourLogs != null ? tourLogs.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public Prototype clone() {
+        return new Tour(this);
     }
 }

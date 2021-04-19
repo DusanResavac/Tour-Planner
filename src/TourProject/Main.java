@@ -1,5 +1,6 @@
 package TourProject;
 
+import TourProject.DataAccessLayer.Config;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,6 +11,10 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+
+        Config config = Config.getInstance();
+        System.out.println((String)config.getAttribute("apiKey"));
+
         // fxml created with SceneBuilder
         Parent root = FXMLLoader.load(getClass().getResource("mainWindow.fxml"));
         System.out.println("fxml loaded");
@@ -24,6 +29,8 @@ public class Main extends Application {
 
         // let's go
         primaryStage.show();
+
+
         System.out.println("show stage");
     }
 

@@ -6,9 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<!-- TODO: SplitPane - VGrow, HGrow instead of Max-Values -->
-
-<GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="50.0" prefHeight="500.0" prefWidth="550.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="TourProject.Controller">
+<GridPane minWidth="50.0" prefHeight="500.0" prefWidth="550.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="TourProject.Controller">
     <rowConstraints>
         <RowConstraints prefHeight="35" />
         <RowConstraints prefHeight="35" />
@@ -71,7 +69,7 @@
             <Button defaultButton="true" maxWidth="250" onAction="#search" GridPane.columnIndex="1">
                 <graphic>
                     <ImageView fitHeight="25.0" pickOnBounds="true" preserveRatio="true" GridPane.vgrow="NEVER">
-                        <Image url="https://freeiconshop.com/wp-content/uploads/edd/search-outline-filled.png" />
+                        <Image url="file:@../../resources/search.png"/>
                     </ImageView>
                 </graphic>
                 Search
@@ -83,128 +81,143 @@
                 <Insets />
             </GridPane.margin>
         </GridPane>
-
-
-        <!-- Tourname list -->
-        <VBox maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="100.0" GridPane.rowIndex="3">
-            <children>
-                <!-- Add/Delete Tour button -->
-                <GridPane minHeight="20.0">
-                    <columnConstraints>
-                        <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
-                        <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
-                    <children>
+        <SplitPane dividerPositions="0.3" GridPane.columnSpan="4" GridPane.rowIndex="3">
+            <!-- Tourname list -->
+            <AnchorPane minHeight="0.0" minWidth="0.0">
+                <VBox AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+                    <padding>
+                        <Insets top="10.0" />
+                    </padding>
+                    <!-- Add/Delete/Edit Tour buttons -->
+                    <GridPane minHeight="20.0">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+                        </columnConstraints>
+                        <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        </rowConstraints>
+                        <VBox.margin>
+                            <Insets bottom="5.0" />
+                        </VBox.margin>
                         <Button maxWidth="50.0" mnemonicParsing="false" text="+" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" />
                         <Button maxWidth="50.0" mnemonicParsing="false" text="-" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" />
-                    </children>
-                    <VBox.margin>
-                        <Insets bottom="5.0" />
-                    </VBox.margin>
-                </GridPane>
+                        <Button layoutX="64.0" layoutY="8.0" mnemonicParsing="false" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" onAction="#editTour">
+                            <graphic>
+                                <ImageView fitHeight="20.0" pickOnBounds="true" preserveRatio="true" GridPane.vgrow="NEVER">
+                                    <Image url="file:@../../resources/edit.png" />
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                    </GridPane>
 
-                <!-- Tourname table -->
-                <TableView fx:id="toursListing" maxHeight="1.7976931348623157E308" VBox.vgrow="SOMETIMES">
-                    <columns>
-                        <TableColumn fx:id="tournameColumn" prefWidth="120.0" text="Tours" />
-                    </columns>
-                </TableView>
-            </children>
-            <padding>
-                <Insets top="10.0" />
-            </padding>
-        </VBox>
+                    <!-- Tourname table -->
+                    <TableView fx:id="toursListing" VBox.vgrow="SOMETIMES">
+                        <columns>
+                            <TableColumn fx:id="tournameColumn" prefWidth="120.0" text="Tours" />
+                        </columns>
+                    </TableView>
+                </VBox>
+            </AnchorPane>
+            <!-- Tour details -->
+            <AnchorPane minHeight="0.0" minWidth="0.0">
 
-        <!-- TourLogs and Tourinfos -->
-        <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="3">
-            <children>
-                <Label fx:id="tourLabel" text="Title: ">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-                    <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                    </VBox.margin>
-                </Label>
-                <ButtonBar prefHeight="40.0" prefWidth="200.0" />
-                <TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="SOMETIMES">
-                    <tabs>
-                        <Tab text="Route">
-                            <content>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                            </content>
-                        </Tab>
-                        <Tab text="Description">
-                            <content>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                           <children>
-                              <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="139.0" prefWidth="385.0">
+                <SplitPane dividerPositions="0.5" orientation="VERTICAL" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                        <!-- TourLogs and Tourinfos -->
+                        <VBox AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+                            <Label fx:id="tourLabel" text="Title: ">
+                                <font>
+                                    <Font size="14.0" />
+                                </font>
+                                <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                </padding>
+                            </Label>
+                            <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+                                <Tab text="Route">
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                </Tab>
+                                <Tab text="Description">
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                        <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                                  AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                            <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                            </rowConstraints>
+                                            <Label fx:id="tourDescription" maxWidth="550.0" wrapText="true"
+                                                   GridPane.valignment="TOP">
+                                                <font>
+                                                    <Font size="14.0"/>
+                                                </font>
+                                                <padding>
+                                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                                </padding>
+                                            </Label>
+                                        </GridPane>
+                                    </AnchorPane>
+                                </Tab>
+                            </TabPane>
+                            <ButtonBar prefHeight="40.0" prefWidth="200.0" />
+                        </VBox>
+                    </AnchorPane>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                        <VBox AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+                            <GridPane>
                                 <columnConstraints>
-                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                 </columnConstraints>
                                 <rowConstraints>
-                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
-                                 <children>
-                                    <Label fx:id="tourDescription" maxWidth="450.0" text="Label" wrapText="true" />
-                                 </children>
-                              </GridPane>
-                           </children>
-                                </AnchorPane>
-                            </content>
-                        </Tab>
-                    </tabs>
-                </TabPane>
-            <VBox prefHeight="200.0" prefWidth="100.0">
-               <children>
-                  <GridPane>
-                    <columnConstraints>
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
-                     <children>
-                        <Label maxWidth="1.7976931348623157E308" text="Logs">
-                           <font>
-                              <Font size="18.0" />
-                           </font>
-                           <padding>
-                              <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
-                           </padding>
-                           <GridPane.margin>
-                              <Insets />
-                           </GridPane.margin>
-                        </Label>
-                        <Button mnemonicParsing="false" text="+" GridPane.columnIndex="1" />
-                        <Button mnemonicParsing="false" text="-" GridPane.columnIndex="2" />
-                     </children>
-                     <VBox.margin>
-                        <Insets bottom="10.0" top="10.0" />
-                     </VBox.margin>
-                  </GridPane>
+                                <VBox.margin>
+                                    <Insets bottom="10.0" top="10.0" />
+                                </VBox.margin>
+                                <Label text="Logs" GridPane.columnSpan="2" GridPane.hgrow="SOMETIMES" GridPane.vgrow="SOMETIMES">
+                                    <font>
+                                        <Font size="18.0" />
+                                    </font>
+                                    <padding>
+                                        <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
+                                    </padding>
+                                    <GridPane.margin>
+                                        <Insets />
+                                    </GridPane.margin>
+                                </Label>
+                                <HBox alignment="CENTER" GridPane.columnIndex="2" GridPane.hgrow="SOMETIMES">
+                                    <Button mnemonicParsing="false" text="+" GridPane.halignment="CENTER" HBox.hgrow="ALWAYS" />
+                                    <Button mnemonicParsing="false" text="-" GridPane.halignment="CENTER" HBox.hgrow="ALWAYS" />
+                                    <Button mnemonicParsing="false" GridPane.halignment="CENTER" HBox.hgrow="ALWAYS">
+                                        <graphic>
+                                            <ImageView fitHeight="20.0" pickOnBounds="true" preserveRatio="true" GridPane.vgrow="NEVER">
+                                                <Image url="file:@../../resources/edit.png" />
+                                            </ImageView>
+                                        </graphic>
+                                        Edit
+                                    </Button>
+                                </HBox>
+                            </GridPane>
 
-                      <TableView fx:id="tourLogs" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="300.0" VBox.vgrow="SOMETIMES">
-                          <columns>
-                              <TableColumn fx:id="tourDate" prefWidth="75.0" text="Date" />
-                              <TableColumn fx:id="tourDuration" prefWidth="75.0" text="Duration" />
-                              <TableColumn fx:id="tourDistance" prefWidth="75.0" text="Distance" />
-                              <TableColumn fx:id="tourAvgSpeed" prefWidth="75.0" text="Average SPD" />
-                              <TableColumn prefWidth="75.0" text="..." />
-                          </columns>
-                      </TableView>
-               </children>
-            </VBox>
-            </children>
-            <GridPane.margin>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-            </GridPane.margin>
-        </VBox>
+                            <TableView fx:id="tourLogs" prefHeight="200.0" prefWidth="300.0" VBox.vgrow="SOMETIMES">
+                                <columns>
+                                    <TableColumn fx:id="tourDate" prefWidth="75.0" text="Date" />
+                                    <TableColumn fx:id="tourDuration" prefWidth="75.0" text="Duration" />
+                                    <TableColumn fx:id="tourDistance" prefWidth="75.0" text="Distance" />
+                                    <TableColumn fx:id="tourAvgSpeed" prefWidth="75.0" text="Average SPD" />
+                                    <TableColumn prefWidth="75.0" text="..." />
+                                </columns>
+                            </TableView>
+                        </VBox>
+                    </AnchorPane>
+                </SplitPane>
+            </AnchorPane>
+        </SplitPane>
 
     </children>
     <padding>

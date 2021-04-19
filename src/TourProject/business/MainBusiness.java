@@ -1,38 +1,40 @@
 package TourProject.business;
 
-import TourProject.database.Database;
+import TourProject.DataAccessLayer.DataAccessLayer;
 import TourProject.model.Tour;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainBusiness {
 
-    private static ObservableList<Tour> tours;
-    private static Tour selectedTour;
+    private List<Tour> tours;
+    private Tour selectedTour;
+    private DataAccessLayer dataAccessLayer;
 
-    // TODO: Implement Constructor - move from static implementation to instance-based
+    public MainBusiness(DataAccessLayer dataAccessLayer) {
+        this.dataAccessLayer = dataAccessLayer;
+    }
 
 
-    public static ObservableList<Tour> getTours () {
+    public List<Tour> getTours () {
         if (tours == null) {
-            tours = FXCollections.observableArrayList(
-                    Database.getInstance().getTourList()
-            );
+            tours = this.dataAccessLayer.getTourList();
         }
         return tours;
     }
 
-    public static Tour getSelectedTour() {
+    public Tour getSelectedTour() {
         return selectedTour;
     }
 
-    public static void setSelectedTour(Tour selectedTour) {
-        MainBusiness.selectedTour = selectedTour;
+    public void setSelectedTour(Tour selectedTour) {
+        this.selectedTour = selectedTour;
     }
 
-    public static ObservableList<Tour> search(String text) {
+    public List<Tour> search(String text) {
         text = text.toLowerCase().trim();
-        ObservableList<Tour> tempTours = FXCollections.observableArrayList();
+        List<Tour> tempTours = new ArrayList<Tour>();
         boolean isEmpty = text.equals("");
 
         for (Tour tour : tours) {

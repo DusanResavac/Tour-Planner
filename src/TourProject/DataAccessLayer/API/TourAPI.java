@@ -1,9 +1,8 @@
 package TourProject.DataAccessLayer.API;
 
-import TourProject.model.TourInformation;
+import TourProject.model.api.TourInformation;
 
 public interface TourAPI {
 
-    public TourInformation getRouteInformation (String start, String end);
-    public String getRouteImage (String start, String end);
+    public void getRouteInformation (String start, String end, int tourId, CallbackViewModel c);
 }

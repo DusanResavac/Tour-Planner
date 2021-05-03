@@ -4,7 +4,7 @@ import TourProject.DataAccessLayer.Config;
 
 public class TourAPILoader {
     private static TourAPILoader instance = null;
-    private TourAPI tour;
+    private TourAPI tourApi;
 
 
     private TourAPILoader () {
@@ -14,24 +14,23 @@ public class TourAPILoader {
     public static TourAPILoader getInstance() {
         if (instance == null) {
             instance = new TourAPILoader();
+            instance.readConfigFile();
         }
         return instance;
     }
 
-    public void readConfigFile() {
-        switch((String)Config.getInstance().getAttribute("api-service")) {
-            case "MapQuest":
+    private void readConfigFile() {
+        switch ((String) Config.getInstance().getAttribute("api_service")) {
+            case "MapQuest" -> {
                 var mq = new MapQuest();
                 mq.loadAPIKey();
-                tour = mq;
-                break;
-            case "Mock":
-                tour = new Mock();
-                break;
+                tourApi = mq;
+            }
+            case "Mock" -> tourApi = new Mock();
         }
     }
 
-    public TourAPI getTour() {
-        return tour;
+    public TourAPI getTourAPI() {
+        return tourApi;
     }
 }

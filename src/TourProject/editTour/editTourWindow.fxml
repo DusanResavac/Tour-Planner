@@ -63,12 +63,24 @@
             <Insets bottom="10.0" />
          </VBox.margin>
       </TextField>
+      <Label fx:id="errorMessage" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Es konnte keine passende Route gefunden werden." textAlignment="CENTER" textFill="#d71b1b" visible="false" wrapText="true" VBox.vgrow="SOMETIMES">
+         <font>
+            <Font size="15.0" />
+         </font>
+         <VBox.margin>
+            <Insets bottom="10.0" left="5.0" right="5.0" />
+         </VBox.margin>
+      </Label>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-         <Button mnemonicParsing="false" style="-fx-background-color: #5cb85c; -fx-border-color: #398439;" text="Speichern" textFill="WHITE" onAction="#save">
+         <Button fx:id="saveButton" defaultButton="true" mnemonicParsing="false" onAction="#save" style="-fx-background-color: #5cb85c; -fx-border-color: #398439;" text="Speichern" textFill="WHITE">
             <HBox.margin>
-               <Insets right="20.0" />
+               <Insets right="10.0" />
             </HBox.margin></Button>
-         <Button fx:id="cancelButton" mnemonicParsing="false" style="-fx-background-color: #d9534f; -fx-border-color: #d43f3a;" text="Abbrechen" textFill="WHITE" onAction="#cancel"/>
+         <ProgressIndicator fx:id="progress" visible="false" />
+         <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#cancel" style="-fx-background-color: #d9534f; -fx-border-color: #d43f3a;" text="Abbrechen" textFill="WHITE">
+            <HBox.margin>
+               <Insets left="10.0" />
+            </HBox.margin></Button>
       </HBox>
    </VBox>
 </GridPane>

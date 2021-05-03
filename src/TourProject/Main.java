@@ -1,5 +1,6 @@
 package TourProject;
 
+import TourProject.DataAccessLayer.API.TourAPILoader;
 import TourProject.DataAccessLayer.Config;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -13,7 +14,9 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
 
         Config config = Config.getInstance();
-        System.out.println((String)config.getAttribute("apiKey"));
+        //TourAPILoader.getInstance().getTourAPI().getRouteInformation("Rautenstrauchgasse 6, Wien, Austria", "Mautner-Markhof-Gasse 74, Wien, Austria", 1);
+        //System.out.println(TourAPILoader.getInstance().getTourAPI().getRouteInformation("Denver, USA", "Washington, USA", 1));
+        //System.out.println((String)config.getAttribute("apiKey"));
 
         // fxml created with SceneBuilder
         Parent root = FXMLLoader.load(getClass().getResource("mainWindow.fxml"));

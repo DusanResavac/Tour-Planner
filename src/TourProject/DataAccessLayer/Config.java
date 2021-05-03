@@ -1,6 +1,6 @@
 package TourProject.DataAccessLayer;
 
-import TourProject.model.ConfigFile;
+import TourProject.model.config.ConfigFile;
 import com.google.gson.Gson;
 
 import java.io.IOException;

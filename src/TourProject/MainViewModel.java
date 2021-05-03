@@ -90,8 +90,9 @@ public class MainViewModel implements EditTourSubscriber {
         secondStage.setScene(new Scene(loader.load()));
 
         EditTourController controller =  loader.getController();
-        controller.setSelectedTour(selectedTour.get(0));
-        controller.addSubscriber(this);
+        controller.getViewModel().setSelectedTour(selectedTour.get(0));
+        //controller.setSelectedTour(selectedTour.get(0));
+        controller.getViewModel().addSubscriber(this);
         secondStage.show();
 
     }

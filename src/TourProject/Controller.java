@@ -42,7 +42,6 @@ public class Controller implements Initializable {
 
 
         tournameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-
         tourDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         tourDuration.setCellValueFactory(new PropertyValueFactory<>("duration"));
         tourDistance.setCellValueFactory(new PropertyValueFactory<>("distance"));

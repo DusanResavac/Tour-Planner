@@ -1,6 +1,7 @@
 package TourProject.editTour;
 
 
+import TourProject.MainViewModel;
 import TourProject.model.Tour;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
@@ -51,11 +52,7 @@ public class EditTourController implements Initializable {
         ((Stage)cancelButton.getScene().getWindow()).close();
     }
 
-    public void setSelectedTour(Tour tour) {
-        viewModel.setSelectedTour(tour);
-    }
-
-    public void addSubscriber(EditTourSubscriber subscriber) {
-        viewModel.addSubscriber(subscriber);
+    public EditTourViewModel getViewModel() {
+        return viewModel;
     }
 }

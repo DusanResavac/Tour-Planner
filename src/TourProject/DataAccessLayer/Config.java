@@ -22,7 +22,7 @@ public class Config {
             try {
                 String b = String.join("", Files.readAllLines(Paths.get(configPath)));
                 instance.configFile = gson.fromJson(b, ConfigFile.class);
-                System.out.println(instance.configFile);
+                //System.out.println(instance.configFile);
             } catch (IOException ioException) {
                 instance = null;
                 ioException.printStackTrace();

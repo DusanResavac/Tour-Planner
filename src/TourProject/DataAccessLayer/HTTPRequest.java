@@ -23,27 +23,13 @@ public class HTTPRequest {
             con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:86.0) Gecko/20100101 Firefox/88.0");
             con.setRequestMethod("GET");
             con.setConnectTimeout(30000);
-            con.setReadTimeout(30000);
+            con.setReadTimeout(0);
 
             final String[] response = new String[]{null};
 
             RequestThread runnable = new RequestThread(callback, con, filePath);
             Thread t = new Thread(runnable);
             t.start();
-
-            /*new Thread(() -> {
-                try {
-                    int status = con.getResponseCode();
-                    response[0] = filePath != null ? writeFullResponse(con, filePath) : getFullResponse(con);
-                    con.disconnect();
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
-                }
-            });
-            newThread.start();
-            return response[0];*/
-
-
 
             //System.out.println(response);
         } catch (IOException e) {

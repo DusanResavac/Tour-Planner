@@ -92,6 +92,7 @@ public class EditTourController implements Initializable, CallbackController {
     @Override
     public void callback(boolean saved) {
         if (saved) {
+            System.out.println("Changes saved");
             cancel(null);
         } else {
             errorMessage.setVisible(true);

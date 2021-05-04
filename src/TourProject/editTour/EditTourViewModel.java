@@ -35,12 +35,6 @@ public class EditTourViewModel implements CallbackViewModel {
         selectedTour.setDescription(tourDescription.get());
         if (tourStart.get() != null && tourStart.get().length() > 0 && tourEnd.get() != null && tourEnd.get().length() > 0) {
             TourAPILoader.getInstance().getTourAPI().getRouteInformation(tourStart.get(), tourEnd.get(), 1, this);
-            /*if (tourInformation == null) {
-                controller.apiCallDone();
-                return false;
-            }
-            selectedTour.setImagePath(tourInformation.getImagePath());
-            selectedTour.setDistance(tourInformation.getDistance());*/
         } else {
             subscribers.forEach(sub -> sub.update(selectedTour));
         }

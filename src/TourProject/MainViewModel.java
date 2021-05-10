@@ -81,6 +81,10 @@ public class MainViewModel implements EditTourSubscriber {
         selectedTour.add(selectedItem);
     }
 
+    public void addTour() {
+        Stage secondStage = new Stage();
+    }
+
     public void editTour() throws IOException {
         Stage secondStage = new Stage();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("editTour/editTourWindow.fxml"));

@@ -2,7 +2,9 @@ package TourProject.DataAccessLayer.API;
 
 import TourProject.model.api.TourInformation;
 
+import java.util.concurrent.CompletableFuture;
+
 public interface TourAPI {
 
-    public void getRouteInformation (String start, String end, int tourId, CallbackViewModel c);
+    public CompletableFuture<TourInformation> getRouteInformation (String start, String end, int tourId);
 }

@@ -2,7 +2,6 @@ package TourProject.editTour;
 
 
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -10,10 +9,8 @@ import javafx.stage.Stage;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
 
-public class EditTourController implements Initializable, CallbackController {
+public class EditTourController implements Initializable {
 
 
     public Button cancelButton;
@@ -46,35 +43,28 @@ public class EditTourController implements Initializable, CallbackController {
         progress.setVisible(false);
 
         tourName.textProperty().addListener((observable, oldValue, newValue) -> {
-            saveButton.setDisable(viewModel.isInvalidForm());
+            viewModel.checkFormValidity();
         });
         tourDescription.textProperty().addListener((observable, oldValue, newValue) -> {
-            saveButton.setDisable(viewModel.isInvalidForm());
+            viewModel.checkFormValidity();
         });
 
+        errorMessage.visibleProperty().bindBidirectional(viewModel.getRouteErrorProperty());
+        saveButton.disableProperty().bindBidirectional(viewModel.getInvalidFormProperty());
+        progress.visibleProperty().bindBidirectional(viewModel.getIsBusyProperty());
         tourName.textProperty().bindBidirectional(viewModel.getTourName());
         tourDescription.textProperty().bindBidirectional(viewModel.getTourDescription());
     }
 
     public void save(ActionEvent actionEvent) throws InterruptedException {
-        saveButton.setDisable(true);
-        errorMessage.setVisible(false);
-        progress.setVisible(true);
-        viewModel.saveChanges(this);
-        /*if () {
-            ((Stage) cancelButton.getScene().getWindow()).close();
-        } else {
-            errorMessage.setVisible(true);
-        }
-
-        progress.setVisible(false);
-        saveButton.setDisable(false);*/
-
+        viewModel.saveChanges()
+                .whenComplete((success, error) -> {
+                    if (success) {
+                        cancel(null);
+                    }
+                });
     }
 
-    public void apiCallDone() {
-        System.out.println("done");
-    }
 
     public void cancel(ActionEvent actionEvent) {
         Platform.runLater(new Runnable(){
@@ -87,17 +77,5 @@ public class EditTourController implements Initializable, CallbackController {
 
     public EditTourViewModel getViewModel() {
         return viewModel;
-    }
-
-    @Override
-    public void callback(boolean saved) {
-        if (saved) {
-            System.out.println("Changes saved");
-            cancel(null);
-        } else {
-            errorMessage.setVisible(true);
-        }
-        progress.setVisible(false);
-        saveButton.setDisable(false);
     }
 }

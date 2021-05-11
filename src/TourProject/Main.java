@@ -1,6 +1,5 @@
 package TourProject;
 
-import TourProject.DataAccessLayer.API.TourAPILoader;
 import TourProject.DataAccessLayer.Config;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -22,7 +21,7 @@ public class Main extends Application {
         //System.out.println((String)config.getAttribute("apiKey"));
 
         // fxml created with SceneBuilder
-        Parent root = FXMLLoader.load(getClass().getResource("mainWindow.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("Model/MainWindow/mainWindow.fxml"));
         System.out.println("fxml loaded");
 
         // bootstrap "window" named stage

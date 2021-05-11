@@ -1,6 +1,6 @@
-package TourProject.model;
+package TourProject.Model.Tour;
 
-import javafx.beans.property.*;
+import TourProject.Model.Prototype;
 
 import java.util.Date;
 

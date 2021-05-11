@@ -1,6 +1,4 @@
-package TourProject.model.config;
-
-import java.util.Arrays;
+package TourProject.Model.config;
 
 public class ConfigFile {
     public String apiKey;

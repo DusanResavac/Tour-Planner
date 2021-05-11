@@ -1,7 +1,8 @@
-package TourProject.business;
+package TourProject.BusinessLayer;
 
 import TourProject.DataAccessLayer.DataAccessLayer;
-import TourProject.model.Tour;
+import TourProject.DataAccessLayer.DatabaseLoader;
+import TourProject.Model.Tour.Tour;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +13,8 @@ public class MainBusiness {
     private Tour selectedTour;
     private DataAccessLayer dataAccessLayer;
 
-    public MainBusiness(DataAccessLayer dataAccessLayer) {
-        this.dataAccessLayer = dataAccessLayer;
+    public MainBusiness() {
+        this.dataAccessLayer = DatabaseLoader.getInstance().getDataAccessLayer();
     }
 
 

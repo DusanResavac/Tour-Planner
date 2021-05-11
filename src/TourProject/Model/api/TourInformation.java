@@ -1,9 +1,18 @@
-package TourProject.model.api;
+package TourProject.Model.api;
 
 public class TourInformation {
     private Double distance;
     private String sessionId;
     private String imagePath;
+    private Integer tourId;
+
+    public Integer getTourId() {
+        return tourId;
+    }
+
+    public void setTourId(Integer tourId) {
+        this.tourId = tourId;
+    }
 
     public Double getDistance() {
         return distance;

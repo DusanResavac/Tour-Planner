@@ -1,12 +1,13 @@
 package TourProject.DataAccessLayer;
 
-import TourProject.model.Tour;
-import TourProject.model.TourLog;
+import TourProject.Model.Tour.Tour;
+import TourProject.Model.Tour.TourLog;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class Database implements DataAccessLayer {
 
@@ -14,6 +15,18 @@ public class Database implements DataAccessLayer {
 
     public Database() {
         setTourList(getData());
+    }
+
+    @Override
+    public CompletableFuture<Integer> insertTour(Tour tour) {
+        // TODO: Insert tour (even if image is not given)
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Boolean> updateTour(Tour tour) {
+        // TODO: Update tour (all values that are not null)
+        return null;
     }
 
     public void setTourList(List<Tour> tourList) {

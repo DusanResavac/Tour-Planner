@@ -1,8 +1,8 @@
 package TourProject.DataAccessLayer.API;
 
 import TourProject.DataAccessLayer.Config;
-import TourProject.model.api.RequestBody;
-import TourProject.model.api.TourInformation;
+import TourProject.Model.api.RequestBody;
+import TourProject.Model.api.TourInformation;
 import com.google.gson.Gson;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -10,23 +10,22 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 
 public class MapQuest implements TourAPI {
 
     private String apiKey = null;
     private TourInformation tourInformation = null;
-    private int tourId;
+    private HttpClient client;
+
 
     public void loadAPIKey() {
         apiKey = (String) Config.getInstance().getAttribute("apiKey");
     }
 
     @Override
-    public CompletableFuture<TourInformation> getRouteInformation(String start, String end, int tourId) {
-        this.tourId = tourId;
-        HttpClient client = HttpClient.newHttpClient();
+    public CompletableFuture<TourInformation> getRouteInformation(String start, String end) {
+        client = HttpClient.newHttpClient();
         StringBuilder website = new StringBuilder("https://www.mapquestapi.com/directions/v2/route");
 
         //"http://www.mapquestapi.com/directions/v2/route?key=KEY&from=Clarendon Blvd,Arlington,VA&to=2400+S+Glebe+Rd,+Arlington,+VA&routeType=bicycle";
@@ -50,22 +49,19 @@ public class MapQuest implements TourAPI {
                     }
 
                     return (TourInformation) requestBody.route;
-                })
-                .thenCompose(tourInformation -> {
-                    return getRouteImage(tourInformation.getSessionId(), tourId, client)
+                });
+                /*.thenCompose(tourInformation -> {
+                    return getRouteImage(tourInformation.getSessionId(), client)
                             .thenApply((imagePath) -> {
-                                tourInformation.setImagePath(imagePath);
-                                return tourInformation;
-                            })
-                            .exceptionally(ex -> {
+                                //tourInformation.setImagePath(imagePath);
                                 return tourInformation;
                             });
-                });
+                });*/
 
 
     }
 
-    private CompletableFuture<String> getRouteImage(String sessionId, int tourId, HttpClient client) {
+    public CompletableFuture<byte[]> getRouteImage(String sessionId, int tourId) {
         StringBuilder website = new StringBuilder("https://www.mapquestapi.com/staticmap/v5/map");
 
         //"http://www.mapquestapi.com/directions/v2/route?key=KEY&from=Clarendon Blvd,Arlington,VA&to=2400+S+Glebe+Rd,+Arlington,+VA&routeType=bicycle";
@@ -78,17 +74,16 @@ public class MapQuest implements TourAPI {
                 .build();
         String imagePath = "tourbild-" + tourId + ".jpg";
 
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofFile(Path.of(imagePath)))
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofByteArray())
                 .thenApply((response) -> {
-                    Path body = response.body();
                     if (response.statusCode() != 200) {
                         // TODO: Logging
-                        body.toFile().delete();
-                        var ex = new NullPointerException("ImagePath must not be null. Error while retrieving Route-image occurred.");
+                        var ex = new NullPointerException("Error while retrieving route-image occurred.");
                         //System.err.println(ex.getMessage());
                         throw ex;
                     }
-                    return body.toString();
+                    return response.body();
                 });
     }
+
 }

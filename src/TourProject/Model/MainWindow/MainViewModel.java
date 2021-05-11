@@ -1,11 +1,14 @@
-package TourProject;
+package TourProject.Model.MainWindow;
 
-import TourProject.business.MainBusiness;
+import TourProject.Model.addTour.AddTourController;
+import TourProject.Model.addTour.AddTourViewModel;
+import TourProject.BusinessLayer.MainBusiness;
 import TourProject.DataAccessLayer.DataAccessLayer;
-import TourProject.editTour.EditTourController;
-import TourProject.editTour.EditTourSubscriber;
-import TourProject.model.Tour;
-import TourProject.model.TourLog;
+import TourProject.Model.editTour.EditTourController;
+import TourProject.Model.editTour.EditTourSubscriber;
+import TourProject.Model.editTour.EditTourViewModel;
+import TourProject.Model.Tour.Tour;
+import TourProject.Model.Tour.TourLog;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -28,8 +31,8 @@ public class MainViewModel implements EditTourSubscriber {
     private final ObservableList<TourLog> tourLogs = FXCollections.observableArrayList();
     private final MainBusiness mainBusiness;
 
-    public MainViewModel(DataAccessLayer dal) {
-        mainBusiness = new MainBusiness(dal);
+    public MainViewModel() {
+        mainBusiness = new MainBusiness();
     }
 
     public StringProperty inputProperty() {
@@ -81,22 +84,33 @@ public class MainViewModel implements EditTourSubscriber {
         selectedTour.add(selectedItem);
     }
 
-    public void addTour() {
+    public void addTour() throws IOException {
         Stage secondStage = new Stage();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../Tour/TourWindow.fxml"));
+        AddTourController addTourController = new AddTourController(new AddTourViewModel());
+        loader.setController(addTourController);
+
+
+        secondStage.setTitle("Add Tour");
+        secondStage.setScene(new Scene(loader.load()));
+        addTourController.getViewModel().setSelectedTour(new Tour());
+        //controller.setSelectedTour(selectedTour.get(0));
+        addTourController.getViewModel().addSubscriber(this);
+        secondStage.show();
     }
 
     public void editTour() throws IOException {
         Stage secondStage = new Stage();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("editTour/editTourWindow.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../Tour/TourWindow.fxml"));
+        EditTourController editTourController = new EditTourController(new EditTourViewModel());
+        loader.setController(editTourController);
 
 
         secondStage.setTitle("Edit " + selectedTour.get(0).getName());
         secondStage.setScene(new Scene(loader.load()));
-
-        EditTourController controller =  loader.getController();
-        controller.getViewModel().setSelectedTour(selectedTour.get(0));
+        editTourController.getViewModel().setSelectedTour(selectedTour.get(0));
         //controller.setSelectedTour(selectedTour.get(0));
-        controller.getViewModel().addSubscriber(this);
+        editTourController.getViewModel().addSubscriber(this);
         secondStage.show();
 
     }

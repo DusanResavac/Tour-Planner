@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<GridPane minWidth="50.0" prefHeight="500.0" prefWidth="550.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="TourProject.Controller">
+<GridPane minWidth="50.0" prefHeight="500.0" prefWidth="550.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="TourProject.Model.MainWindow.Controller">
     <rowConstraints>
         <RowConstraints prefHeight="35" />
         <RowConstraints prefHeight="35" />
@@ -101,8 +101,11 @@
                         <VBox.margin>
                             <Insets bottom="5.0" />
                         </VBox.margin>
-                        <Button maxWidth="50.0" mnemonicParsing="false" text="+" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" />
+                        <!-- Add Button -->
+                        <Button maxWidth="50.0" mnemonicParsing="false" text="+" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" onAction="#addTour"/>
+                        <!-- Delete Button -->
                         <Button maxWidth="50.0" mnemonicParsing="false" text="-" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" />
+                        <!-- Edit Button -->
                         <Button layoutX="64.0" layoutY="8.0" mnemonicParsing="false" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" onAction="#editTour">
                             <graphic>
                                 <ImageView fitHeight="20.0" pickOnBounds="true" preserveRatio="true" GridPane.vgrow="NEVER">

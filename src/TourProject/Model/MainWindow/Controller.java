@@ -1,7 +1,7 @@
-package TourProject;
+package TourProject.Model.MainWindow;
 
 import TourProject.DataAccessLayer.Database;
-import TourProject.model.Tour;
+import TourProject.Model.Tour.Tour;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
@@ -16,7 +16,7 @@ import java.util.ResourceBundle;
 public class Controller implements Initializable {
 
     // create custom viewmodel
-    public MainViewModel viewModel = new MainViewModel(new Database());
+    public MainViewModel viewModel = new MainViewModel();
 
     // add fx:id and use intelliJ to create field in controller
     public TextField inputSearch;
@@ -84,5 +84,9 @@ public class Controller implements Initializable {
 
     public void editTour(ActionEvent actionEvent) throws IOException {
         viewModel.editTour();
+    }
+
+    public void addTour(ActionEvent actionEvent) throws IOException {
+        viewModel.addTour();
     }
 }

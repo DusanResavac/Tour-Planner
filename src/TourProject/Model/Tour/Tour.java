@@ -1,17 +1,33 @@
-package TourProject.model;
+package TourProject.Model.Tour;
 
+
+import TourProject.Model.Prototype;
+import TourProject.Model.api.TourInformation;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Tour implements Prototype {
 
-    private String name;
-    private String description;
-    private Double distance;
+    private int tourId;
+    private String name = "";
+    private String description = "";
+    private Double distance = 0.0;
+    private String start = "";
+    private String end = "";
     private String imagePath = null;
-    private List<TourLog> tourLogs;
+    private List<TourLog> tourLogs = new ArrayList<>();
 
+    public Tour() {}
+
+    public Tour(String tourName, String description, Double distance, String imagePath, String start, String end) {
+        this.name = tourName;
+        this.description = description;
+        this.distance = distance;
+        this.imagePath = imagePath;
+        this.start = start;
+        this.end = end;
+    }
 
     public Tour(String tourName, String description, Double distance, String imagePath) {
         this.name = tourName;
@@ -73,6 +89,30 @@ public class Tour implements Prototype {
         this.tourLogs = tourLogs;
     }
 
+    public String getStart() {
+        return start;
+    }
+
+    public void setStart(String start) {
+        this.start = start;
+    }
+
+    public String getEnd() {
+        return end;
+    }
+
+    public void setEnd(String end) {
+        this.end = end;
+    }
+
+    public int getTourId() {
+        return tourId;
+    }
+
+    public void setTourId(int tourId) {
+        this.tourId = tourId;
+    }
+
     @Override
     public String toString() {
         return "Tour{" +
@@ -105,5 +145,51 @@ public class Tour implements Prototype {
     @Override
     public Prototype clone() {
         return new Tour(this);
+    }
+
+    public TourBuilder builder() {
+        return new TourBuilder();
+    }
+
+    public class TourBuilder {
+        private final Tour tour;
+
+        public TourBuilder() {
+            this.tour = new Tour();
+        }
+        public TourBuilder setTourId(Integer tourId) {
+            tour.setTourId(tourId);
+            return this;
+        }
+
+        public TourBuilder setImagePath(String imagePath) {
+            tour.setImagePath(imagePath);
+            return this;
+        }
+
+        public TourBuilder setName(String name) {
+            tour.setName(name);
+            return this;
+        }
+
+        public TourBuilder setDescription(String description) {
+            tour.setDescription(description);
+            return this;
+        }
+
+        public TourBuilder setStart(String start) {
+            tour.setStart(start);
+            return this;
+        }
+
+        public TourBuilder setEnd(String end) {
+            tour.setStart(end);
+            return this;
+        }
+
+        public Tour build() {
+            return tour;
+        }
+
     }
 }

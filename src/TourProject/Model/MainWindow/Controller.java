@@ -1,7 +1,9 @@
 package TourProject.Model.MainWindow;
 
-import TourProject.DataAccessLayer.Database;
 import TourProject.Model.Tour.Tour;
+import TourProject.Model.Tour.TourLog;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
@@ -25,7 +27,7 @@ public class Controller implements Initializable {
     public Label tourLabel;
     public TableView tourLogs;
     public TableColumn tourDate;
-    public TableColumn tourDuration;
+    public TableColumn<TourLog, String> tourDuration;
     public TableColumn tourDistance;
     public TableColumn tourAvgSpeed;
     public Label tourDescription;
@@ -35,6 +37,31 @@ public class Controller implements Initializable {
         System.out.println("Controller created");
     }
 
+    private String formatDurationToString (Integer duration) {
+        StringBuilder result = new StringBuilder();
+
+        double temp = (double) (duration / (60*60));
+        int hours = 0;
+
+        if (temp >= 1) {
+            hours = (int) temp;
+            duration -= hours * 60 * 60;
+            result.append(hours).append("h ");
+        }
+
+        temp = (double) (duration / 60);
+        int minutes = 0;
+
+        if (temp >= 1) {
+            minutes = (int) temp;
+            duration -= minutes * 60;
+            result.append(minutes).append("min ");
+        }
+
+        int seconds = duration;
+        result.append(seconds).append("s");
+        return result.toString();
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -42,8 +69,10 @@ public class Controller implements Initializable {
 
 
         tournameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        tourDate.setCellValueFactory(new PropertyValueFactory<>("date"));
-        tourDuration.setCellValueFactory(new PropertyValueFactory<>("duration"));
+        tourDate.setCellValueFactory(new PropertyValueFactory<>("datetime"));
+        tourDuration.setCellValueFactory(cellData -> {
+            return new SimpleStringProperty(formatDurationToString(cellData.getValue().getDuration()));
+        });
         tourDistance.setCellValueFactory(new PropertyValueFactory<>("distance"));
         tourAvgSpeed.setCellValueFactory(new PropertyValueFactory<>("averageSpeed"));
 

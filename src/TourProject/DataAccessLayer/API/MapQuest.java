@@ -20,23 +20,23 @@ public class MapQuest implements TourAPI {
 
 
     public void loadAPIKey() {
-        apiKey = (String) Config.getInstance().getAttribute("apiKey");
+        apiKey = (String) Config.getInstance().getAttribute("api_key");
     }
 
     @Override
     public CompletableFuture<TourInformation> getRouteInformation(String start, String end) {
         client = HttpClient.newHttpClient();
-        StringBuilder website = new StringBuilder("https://www.mapquestapi.com/directions/v2/route");
 
         //"http://www.mapquestapi.com/directions/v2/route?key=KEY&from=Clarendon Blvd,Arlington,VA&to=2400+S+Glebe+Rd,+Arlington,+VA&routeType=bicycle";
 
-        website.append("?key=").append(apiKey)
-                .append("&from=").append(URLEncoder.encode(start, StandardCharsets.UTF_8))
-                .append("&to=").append(URLEncoder.encode(end, StandardCharsets.UTF_8))
-                .append("&routeType=bicycle");
+        String website = "https://www.mapquestapi.com/directions/v2/route" +
+                "?key=" + apiKey +
+                "&from=" + URLEncoder.encode(start == null ? "" : start, StandardCharsets.UTF_8) +
+                "&to=" + URLEncoder.encode(end == null ? "" : end, StandardCharsets.UTF_8) +
+                "&routeType=bicycle";
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(website.toString()))
+                .uri(URI.create(website))
                 .build();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::body)
@@ -62,15 +62,15 @@ public class MapQuest implements TourAPI {
     }
 
     public CompletableFuture<byte[]> getRouteImage(String sessionId, int tourId) {
-        StringBuilder website = new StringBuilder("https://www.mapquestapi.com/staticmap/v5/map");
 
         //"http://www.mapquestapi.com/directions/v2/route?key=KEY&from=Clarendon Blvd,Arlington,VA&to=2400+S+Glebe+Rd,+Arlington,+VA&routeType=bicycle";
 
-        website.append("?key=").append(apiKey)
-                .append("&session=").append(URLEncoder.encode(sessionId, StandardCharsets.UTF_8))
-                .append("&format=jpg");
+        String website = "https://www.mapquestapi.com/staticmap/v5/map" +
+                "?key=" + apiKey +
+                "&session=" + URLEncoder.encode(sessionId, StandardCharsets.UTF_8) +
+                "&format=jpg";
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(website.toString()))
+                .uri(URI.create(website))
                 .build();
         String imagePath = "tourbild-" + tourId + ".jpg";
 
@@ -78,9 +78,7 @@ public class MapQuest implements TourAPI {
                 .thenApply((response) -> {
                     if (response.statusCode() != 200) {
                         // TODO: Logging
-                        var ex = new NullPointerException("Error while retrieving route-image occurred.");
-                        //System.err.println(ex.getMessage());
-                        throw ex;
+                        throw new NullPointerException("Error while retrieving route-image occurred.");
                     }
                     return response.body();
                 });

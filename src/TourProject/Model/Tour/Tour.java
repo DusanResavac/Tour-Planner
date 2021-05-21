@@ -9,13 +9,13 @@ import java.util.List;
 
 public class Tour implements Prototype {
 
-    private int tourId;
-    private String name = "";
-    private String description = "";
-    private Double distance = 0.0;
-    private String start = "";
-    private String end = "";
-    private String imagePath = null;
+    private Integer tourId;
+    private String name;
+    private String description;
+    private Double distance;
+    private String start;
+    private String end;
+    private String imagePath;
     private List<TourLog> tourLogs = new ArrayList<>();
 
     public Tour() {}
@@ -45,6 +45,10 @@ public class Tour implements Prototype {
     public Tour(Tour tour) {
         this.name = tour.name;
         this.description = tour.description;
+        this.distance = tour.distance;
+        this.imagePath = tour.imagePath;
+        this.start = tour.start;
+        this.end = tour.end;
         this.tourLogs = new ArrayList<>();
         tour.tourLogs.forEach(log -> this.tourLogs.add((TourLog) log.clone()));
     }
@@ -105,8 +109,12 @@ public class Tour implements Prototype {
         this.end = end;
     }
 
-    public int getTourId() {
+    public Integer getTourId() {
         return tourId;
+    }
+
+    public void setTourId(Integer tourId) {
+        this.tourId = tourId;
     }
 
     public void setTourId(int tourId) {
@@ -183,7 +191,17 @@ public class Tour implements Prototype {
         }
 
         public TourBuilder setEnd(String end) {
-            tour.setStart(end);
+            tour.setEnd(end);
+            return this;
+        }
+
+        public TourBuilder setTourLogs(List<TourLog> tourLogs) {
+            tour.setTourLogs(tourLogs);
+            return this;
+        }
+
+        public TourBuilder setDistance(Double distance) {
+            tour.setDistance(distance);
             return this;
         }
 

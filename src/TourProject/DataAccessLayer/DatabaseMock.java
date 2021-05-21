@@ -7,7 +7,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class DatabaseMock implements DataAccessLayer {
     @Override
-    public CompletableFuture<Integer> insertTour(Tour tour) {
+    public CompletableFuture<Long> insertTour(Tour tour) {
         return null;
     }
 
@@ -19,6 +19,11 @@ public class DatabaseMock implements DataAccessLayer {
     @Override
     public void setTourList(List<Tour> tourList) {
 
+    }
+
+    @Override
+    public CompletableFuture<List<Tour>> retrieveData(boolean alsoSetData) {
+        return null;
     }
 
     @Override

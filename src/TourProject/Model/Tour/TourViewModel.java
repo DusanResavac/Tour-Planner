@@ -30,33 +30,59 @@ public abstract class TourViewModel {
         tourDescription.setValue(selectedTour.getDescription());
     }
 
-    public CompletableFuture<Boolean> saveChanges() {
+    public abstract CompletableFuture<Boolean> saveChanges();
+
+    protected CompletableFuture<Boolean> updateOrInsertTour(boolean insert) {
+        routeError.set(false);
+        invalidForm.set(true);
+        isBusy.set(true);
+        
         Tour tour = new Tour().builder()
+                .setTourId(selectedTour.getTourId())
                 .setName(tourName.get())
                 .setDescription(tourDescription.get())
-                .setStart(tourStart.get())
-                .setEnd(tourEnd.get()).build();
+                .setStart(tourStart.get().equals("") ? null : tourStart.get())
+                .setEnd(tourEnd.get().equals("") ? null : tourEnd.get())
+                .setTourLogs(selectedTour.getTourLogs()).build();
 
-        return tourBusiness.insertTour(tour)
-            .handle((insertedTour, error) -> {
-                if (error != null) {
-                    System.err.println(error.getMessage());
-                    routeError.set(true);
+        var tourAction = insert ?
+                tourBusiness.insertTour(tour) :
+                tourBusiness.updateTour(tour);
+
+        return tourAction
+                .handle((insertedOrUpdatedTour, error) -> {
+                    if (error != null || insertedOrUpdatedTour == null) {
+                        if (error != null) {
+                            error.printStackTrace();
+                        }
+                        if (insertedOrUpdatedTour == null) {
+                            System.err.println(insert ?
+                                    "Fehler beim Hinzufügen der Tour aufgetreten." :
+                                    "Fehler beim Verändern der Tour aufgetreten.");
+                        }
+                        routeError.set(true);
+                        isBusy.set(false);
+                        checkFormValidity();
+                        return false;
+                    }
+                    Tour selectedTour = getSelectedTour();
+
+                    selectedTour.setTourId(insertedOrUpdatedTour.getTourId());
+                    selectedTour.setName(insertedOrUpdatedTour.getName());
+                    selectedTour.setDescription(insertedOrUpdatedTour.getDescription());
+                    selectedTour.setDistance(insertedOrUpdatedTour.getDistance());
+                    selectedTour.setImagePath(insertedOrUpdatedTour.getImagePath());
+                    getSubscribers().forEach(sub -> {
+                        if (insert) {
+                            sub.updateAddedTour(selectedTour);
+                        } else {
+                            sub.updateEditedTour(selectedTour);
+                        }
+                    });
                     isBusy.set(false);
                     checkFormValidity();
-                    return false;
-                }
-
-                selectedTour.setTourId(insertedTour.getTourId());
-                selectedTour.setName(insertedTour.getName());
-                selectedTour.setDescription(insertedTour.getDescription());
-                selectedTour.setDistance(insertedTour.getDistance());
-                selectedTour.setImagePath(insertedTour.getImagePath());
-                getSubscribers().forEach(sub -> sub.update(selectedTour));
-                isBusy.set(false);
-                checkFormValidity();
-                return true;
-            });
+                    return true;
+                });
     }
 
 
@@ -90,17 +116,17 @@ public abstract class TourViewModel {
         this.isBusy.set(isBusy);
     }
 
-    public Property<String> getTourStart() {
+    public StringProperty getTourStart() {
         return tourStart;
     }
 
-    public Property<String> getTourEnd() {
+    public StringProperty getTourEnd() {
         return tourEnd;
     }
 
-    public Property<String> getTourName() { return tourName; }
+    public StringProperty getTourName() { return tourName; }
 
-    public Property<String> getTourDescription() {
+    public StringProperty getTourDescription() {
         return tourDescription;
     }
 

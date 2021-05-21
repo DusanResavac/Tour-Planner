@@ -3,15 +3,17 @@ package TourProject.BusinessLayer;
 import TourProject.DataAccessLayer.DataAccessLayer;
 import TourProject.DataAccessLayer.DatabaseLoader;
 import TourProject.Model.Tour.Tour;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class MainBusiness {
-
-    private List<Tour> tours;
+    private final List<Tour> tours = FXCollections.observableArrayList();
     private Tour selectedTour;
-    private DataAccessLayer dataAccessLayer;
+    private final DataAccessLayer dataAccessLayer;
 
     public MainBusiness() {
         this.dataAccessLayer = DatabaseLoader.getInstance().getDataAccessLayer();
@@ -19,9 +21,6 @@ public class MainBusiness {
 
 
     public List<Tour> getTours () {
-        if (tours == null) {
-            tours = this.dataAccessLayer.getTourList();
-        }
         return tours;
     }
 
@@ -45,5 +44,18 @@ public class MainBusiness {
         }
 
         return tempTours;
+    }
+
+    public CompletableFuture<List<Tour>> retrieveTours() {
+        return this.dataAccessLayer.retrieveData(true)
+                .thenApply((tourList) -> {
+                    if (tourList == null) {
+                        System.err.println("Fehler beim Abrufen der Daten aus der Datenbank");
+                    } else {
+                        tours.clear();
+                        tours.addAll(tourList);
+                    }
+                    return tours;
+                });
     }
 }

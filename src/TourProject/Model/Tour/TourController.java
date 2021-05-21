@@ -38,6 +38,7 @@ public abstract class TourController {
 
         tourName.textProperty().addListener((observable, oldValue, newValue) -> {
             //System.out.println("TourName new value: " + newValue);
+
             viewModel.checkFormValidity();
         });
         tourDescription.textProperty().addListener((observable, oldValue, newValue) -> {

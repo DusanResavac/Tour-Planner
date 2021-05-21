@@ -1,5 +1,6 @@
 package TourProject.Model.MainWindow;
 
+import TourProject.BusinessLayer.TourBusiness;
 import TourProject.Model.addTour.AddTourController;
 import TourProject.Model.addTour.AddTourViewModel;
 import TourProject.BusinessLayer.MainBusiness;
@@ -48,7 +49,10 @@ public class MainViewModel implements EditTourSubscriber {
     }
 
     public void setupToursListing() {
-        toursListing.addAll(mainBusiness.getTours());
+        mainBusiness.retrieveTours().thenApplyAsync(tours -> {
+            toursListing.addAll(mainBusiness.getTours());
+            return null;
+        });
     }
 
     public ObservableList<Tour> getSelectedTour() {
@@ -87,7 +91,9 @@ public class MainViewModel implements EditTourSubscriber {
     public void addTour() throws IOException {
         Stage secondStage = new Stage();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("../Tour/TourWindow.fxml"));
-        AddTourController addTourController = new AddTourController(new AddTourViewModel());
+        var addTourViewModel = new AddTourViewModel();
+        addTourViewModel.setTourBusiness(new TourBusiness());
+        var addTourController = new AddTourController(addTourViewModel);
         loader.setController(addTourController);
 
 
@@ -102,7 +108,9 @@ public class MainViewModel implements EditTourSubscriber {
     public void editTour() throws IOException {
         Stage secondStage = new Stage();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("../Tour/TourWindow.fxml"));
-        EditTourController editTourController = new EditTourController(new EditTourViewModel());
+        var editTourViewModel = new EditTourViewModel();
+        editTourViewModel.setTourBusiness(new TourBusiness());
+        EditTourController editTourController = new EditTourController(editTourViewModel);
         loader.setController(editTourController);
 
 
@@ -116,7 +124,17 @@ public class MainViewModel implements EditTourSubscriber {
     }
 
     @Override
-    public void update(Tour tour) {
-        System.out.println("TOUR GEUPDATED: " + tour.toString());
+    public void updateEditedTour(Tour tour) {
+        for (int i = 0; i < toursListing.size(); i++) {
+            if (toursListing.get(i).getTourId().equals(tour.getTourId())) {
+                toursListing.set(i, tour);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void updateAddedTour(Tour tour) {
+        toursListing.add(tour);
     }
 }

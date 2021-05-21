@@ -1,0 +1,9 @@
+{
+  "api_service": "MapQuest", {MapQuest, Mock}
+  "route_image_folder": "YOUR FOLDER",
+  "api_key": "YOUR KEY",
+  "database": "Postgres" {Postgres, Mock},
+  "database_url": "jdbc:postgresql://localhost:5432/tour",
+  "database_user": "postgres",
+  "database_password": "YOUR PASSWORD"
+}

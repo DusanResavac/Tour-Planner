@@ -23,7 +23,10 @@ public class DatabaseLoader {
     private void readConfigFile() {
         switch ((String) Config.getInstance().getAttribute("database")) {
             case "Postgres" -> {
-                dataAccessLayer = new Database();
+                var db = new Database();
+                var tempConfig = Config.getInstance();
+                db.openConnection((String) tempConfig.getAttribute("database_url"), (String) tempConfig.getAttribute("database_user"), (String) tempConfig.getAttribute("database_password"));
+                dataAccessLayer = db;
             }
             case "Mock" -> dataAccessLayer = new DatabaseMock();
         }

@@ -4,3 +4,5 @@ Projekt.iml
 src/sample
 *.jpg
 config.json
+lib
+Tour-Planner.iml

@@ -1,4 +1,4 @@
-package TourProject.Model.Tour;
+package TourProject.Model.TourLog;
 
 import TourProject.Model.Prototype;
 import lombok.Getter;

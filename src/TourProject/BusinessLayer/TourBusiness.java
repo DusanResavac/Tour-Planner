@@ -31,19 +31,13 @@ public class TourBusiness implements ITourBusiness {
 
         // get Route information from API
         return tourAPI.getRouteInformation(tour.getStart(), tour.getEnd())
-/*                .exceptionally(error -> {
-                    //System.err.println(error.getMessage());
-                    throw new IllegalArgumentException("No route with specified starting point and endpoint found");
-                })*/
                 // insert tour and return tourInformation including tourId
                 .thenCompose(tourInformation -> {
                     tour.setDistance(tourInformation.getDistance());
                     return dataAccessLayer.insertTour(tour)
-                            /*.exceptionally( e -> {
-                                throw new IllegalArgumentException("Could not insert tour into database");
-                            })*/
                             .thenApply(tourId -> {
                                 tourInformation.setTourId(Math.toIntExact(tourId));
+                                tour.setTourId(Math.toIntExact(tourId));
                                 return tourInformation;
                             });
                 })
@@ -52,7 +46,9 @@ public class TourBusiness implements ITourBusiness {
                     return retrieveAndSaveRouteImage(tourInformation, tour);
                 })
                 // update tour in database with route image
-                .thenCompose(this::updateTour);
+                .thenCompose(t -> {
+                    return updateTour(t, false);
+                });
     }
 
     public String randomStringGenerator() {
@@ -66,8 +62,8 @@ public class TourBusiness implements ITourBusiness {
     }
 
     @Override
-    public CompletableFuture<Tour> updateTour(Tour tour) {
-        if (tour.getStart() != null && tour.getEnd() != null && !tour.getStart().equals("") && !tour.getEnd().equals("")) {
+    public CompletableFuture<Tour> updateTour(Tour tour, boolean retrieveImage) {
+        if (retrieveImage && tour.getStart() != null && tour.getEnd() != null && !tour.getStart().equals("") && !tour.getEnd().equals("")) {
             // Falls Start- oder Endpunkt verändert wurden, muss die API verwendet werden
             return tourAPI.getRouteInformation(tour.getStart(), tour.getEnd())
                     .thenCompose(tourInformation -> {
@@ -89,7 +85,7 @@ public class TourBusiness implements ITourBusiness {
     }
 
     public CompletableFuture<Tour> retrieveAndSaveRouteImage (TourInformation tourInformation, Tour tour) {
-        Integer tourId = tourInformation.getTourId() == null ? tour.getTourId() :tourInformation.getTourId();
+        Integer tourId = tourInformation.getTourId() == null ? tour.getTourId() : tourInformation.getTourId();
         return tourAPI.getRouteImage(tourInformation.getSessionId(), tourId)
                 /*.exceptionally(error -> {
                     throw new NullPointerException("Error while retrieving route-image occurred");

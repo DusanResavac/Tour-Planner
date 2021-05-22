@@ -58,4 +58,17 @@ public class MainBusiness {
                     return tours;
                 });
     }
+
+    public CompletableFuture<Boolean> removeTour(Tour tour) {
+        // TODO: Remove artificial loading time
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        /*return CompletableFuture.supplyAsync(() -> {
+            return false;
+        });*/
+        return dataAccessLayer.removeTour(tour);
+    }
 }

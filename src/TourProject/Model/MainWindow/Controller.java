@@ -1,15 +1,18 @@
 package TourProject.Model.MainWindow;
 
 import TourProject.Model.Tour.Tour;
-import TourProject.Model.Tour.TourLog;
-import javafx.beans.property.ReadOnlyStringWrapper;
+import TourProject.Model.TourLog.TourLog;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 
 import java.io.IOException;
 import java.net.URL;
@@ -31,6 +34,9 @@ public class Controller implements Initializable {
     public TableColumn tourDistance;
     public TableColumn tourAvgSpeed;
     public Label tourDescription;
+    public ImageView tourImage;
+    public ScrollPane tourImageScrollPane;
+    public Pane tourImageTab;
 
     public Controller()
     {
@@ -67,7 +73,6 @@ public class Controller implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         System.out.println("Controller init");
 
-
         tournameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         tourDate.setCellValueFactory(new PropertyValueFactory<>("datetime"));
         tourDuration.setCellValueFactory(cellData -> {
@@ -77,14 +82,44 @@ public class Controller implements Initializable {
         tourAvgSpeed.setCellValueFactory(new PropertyValueFactory<>("averageSpeed"));
 
 
-
+        var selectionModel = toursListing.getSelectionModel();
+        ObservableList<Tour> selectedItems = selectionModel.getSelectedItems();
+        tourImageTab.minHeightProperty().bind(tourImageScrollPane.heightProperty());
+        selectedItems.addListener(new ListChangeListener<Tour>() {
+            @Override
+            public void onChanged(Change<? extends Tour> change) {
+                System.out.println("Selection changed: " + change.getList());
+                if (change.getList().size() == 1) {
+                    viewModel.setSelectedTour((Tour) change.getList().get(0));
+                    tourLogs.setItems(viewModel.getTourLogs());
+                    var selectedTour = viewModel.getSelectedTour().size() > 0 ? viewModel.getSelectedTour().get(0) : null;
+                    if (selectedTour != null && selectedTour.getImagePath() != null) {
+                        System.out.println("Change image");
+                        String path;
+                        if (selectedTour.getImagePath().startsWith("http")) {
+                            path = selectedTour.getImagePath();
+                        } else {
+                            path = "file:@../../" + selectedTour.getImagePath();
+                        }
+                        tourImage.setImage(new Image(path));
+                        tourImage.fitWidthProperty().bind(tourImageTab.widthProperty());
+                        tourImage.fitHeightProperty().bind(tourImageTab.heightProperty());
+                        tourImageTab.minHeightProperty().bind(tourImageScrollPane.heightProperty());
+                        tourImage.maxWidth(500);
+                    }
+                }
+            }
+        });
+/*
         toursListing.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                var b= toursListing.getSelectionModel();
                 viewModel.setSelectedTour((Tour) toursListing.getSelectionModel().getSelectedItem());
-                tourLogs.setItems(viewModel.getTourLogs());
+                //tourImage.setImage(new Image(tours));
+
             }
-        });
+        });*/
 
         viewModel.setupToursListing();
 
@@ -118,4 +153,21 @@ public class Controller implements Initializable {
     public void addTour(ActionEvent actionEvent) throws IOException {
         viewModel.addTour();
     }
+
+    public void deleteTour(ActionEvent actionEvent) {
+        viewModel.removeTour();
+    }
+
+    public void addTourLog(ActionEvent actionEvent) {
+        viewModel.addTourLog();
+    }
+
+    public void removeTourLog(ActionEvent actionEvent) {
+        viewModel.removeTourLog();
+    }
+
+    public void editTourLog(ActionEvent actionEvent) {
+        viewModel.editTourLog();
+    }
+
 }

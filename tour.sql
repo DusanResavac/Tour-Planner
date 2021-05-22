@@ -40,19 +40,19 @@ VALUES ('Tour 1: France',
         75.0,
         'Mâcon, 71000, France',
         'Lyon, France',
-        null),
+        'https://zenduwork.com/wp-content/uploads/2017/04/routing-pointa-ppointb.png'),
        ('Tour 2: Germany',
         'Eine schöne längere Fahrradstrecke',
         53.5,
         'Kulmbach, Germany',
         'Bamberg, Germany',
-        null),
+        'https://zenduwork.com/wp-content/uploads/2017/04/routing-pointa-ppointb.png'),
        ('Tour 3: Austria',
         'Eine Strecke zum Entspannen 😌',
         20,
         'Kleingartenverein Unterer Prater, 1020 Wien, Österreich',
         '2401 Fischamend, Niederösterreich, Österreich',
-        null);
+        'https://zenduwork.com/wp-content/uploads/2017/04/routing-pointa-ppointb.png');
 
 insert into tourlog (tour, datetime, report, distance, duration, rating, max_incline, average_speed, top_speed,
                      weather, number_of_breaks)

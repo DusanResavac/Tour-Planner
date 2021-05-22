@@ -1,15 +1,13 @@
 package TourProject.Model.Tour;
 
 import TourProject.BusinessLayer.ITourBusiness;
-import TourProject.DataAccessLayer.API.TourAPILoader;
-import TourProject.Model.editTour.EditTourSubscriber;
 import javafx.beans.property.*;
 
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
 public abstract class TourViewModel {
-    private final ArrayList<EditTourSubscriber> subscribers = new ArrayList<>();
+    private final ArrayList<TourSubscriber> subscribers = new ArrayList<>();
     public StringProperty tourName = new SimpleStringProperty("");
     public StringProperty tourDescription = new SimpleStringProperty("");
     public StringProperty tourStart = new SimpleStringProperty("");
@@ -20,7 +18,7 @@ public abstract class TourViewModel {
     private ITourBusiness tourBusiness = null;
     private Tour selectedTour;
 
-    public void addSubscriber(EditTourSubscriber subscriber) {
+    public void addSubscriber(TourSubscriber subscriber) {
         this.subscribers.add(subscriber);
     }
 
@@ -36,7 +34,7 @@ public abstract class TourViewModel {
         routeError.set(false);
         invalidForm.set(true);
         isBusy.set(true);
-        
+
         Tour tour = new Tour().builder()
                 .setTourId(selectedTour.getTourId())
                 .setName(tourName.get())
@@ -47,7 +45,7 @@ public abstract class TourViewModel {
 
         var tourAction = insert ?
                 tourBusiness.insertTour(tour) :
-                tourBusiness.updateTour(tour);
+                tourBusiness.updateTour(tour, true);
 
         return tourAction
                 .handle((insertedOrUpdatedTour, error) -> {
@@ -88,7 +86,7 @@ public abstract class TourViewModel {
 
     public abstract void checkFormValidity();
 
-    public ArrayList<EditTourSubscriber> getSubscribers() {
+    public ArrayList<TourSubscriber> getSubscribers() {
         return subscribers;
     }
 

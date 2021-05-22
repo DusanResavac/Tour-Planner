@@ -11,4 +11,5 @@ public interface DataAccessLayer {
     void setTourList(List<Tour> tourList);
     CompletableFuture<List<Tour>> retrieveData (boolean alsoSetData);
     List<Tour> getTourList();
+    CompletableFuture<Boolean> removeTour(Tour tour);
 }

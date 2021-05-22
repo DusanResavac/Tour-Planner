@@ -30,4 +30,9 @@ public class DatabaseMock implements DataAccessLayer {
     public List<Tour> getTourList() {
         return null;
     }
+
+    @Override
+    public CompletableFuture<Boolean> removeTour(Tour tour) {
+        return null;
+    }
 }

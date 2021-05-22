@@ -1,7 +1,7 @@
 package TourProject.DataAccessLayer;
 
 import TourProject.Model.Tour.Tour;
-import TourProject.Model.Tour.TourLog;
+import TourProject.Model.TourLog.TourLog;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -109,6 +109,25 @@ public class Database implements DataAccessLayer {
 
     public List<Tour> getTourList() {
         return tourList;
+    }
+
+    @Override
+    public CompletableFuture<Boolean> removeTour(Tour tour) {
+        return CompletableFuture.supplyAsync(() -> {
+            try (var stmt = connection.prepareStatement("delete from tour where id = ?")) {
+                if (tour.getTourId() == null) {
+                    stmt.setNull(1, Types.INTEGER);
+                } else {
+                    stmt.setInt(1, tour.getTourId());
+                }
+                var affectedRows = stmt.executeUpdate();
+                return affectedRows > 0;
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+
+            return false;
+        });
     }
 
     /**

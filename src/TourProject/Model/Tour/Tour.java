@@ -2,7 +2,7 @@ package TourProject.Model.Tour;
 
 
 import TourProject.Model.Prototype;
-import TourProject.Model.api.TourInformation;
+import TourProject.Model.TourLog.TourLog;
 
 import java.util.ArrayList;
 import java.util.List;

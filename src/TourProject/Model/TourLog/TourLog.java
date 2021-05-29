@@ -23,29 +23,29 @@ public class TourLog implements Prototype {
     number_of_breaks integer
     */
     @Getter @Setter
-    private Integer id;
+    private Integer id = null;
     @Getter @Setter
-    private Integer tourId;
+    private Integer tourId = null;
     @Getter @Setter
     private Date datetime = null;
     @Getter @Setter
-    private String report;
+    private String report = null;
     @Getter @Setter
-    private Double distance;
+    private Double distance = null;
     @Getter @Setter
-    private Integer duration;
+    private Integer duration = null;
     @Getter
-    private Integer rating;
+    private Integer rating = null;
     @Getter @Setter
-    private Double maxIncline;
+    private Double maxIncline = null;
     @Getter @Setter
-    private Double averageSpeed;
+    private Double averageSpeed = null;
     @Getter @Setter
-    private Double topSpeed;
+    private Double topSpeed = null;
     @Getter @Setter
-    private String weather;
+    private String weather = null;
     @Getter @Setter
-    private Integer numberOfBreaks;
+    private Integer numberOfBreaks = null;
 
     /**
      * Creates a log entry for a tour
@@ -91,6 +91,10 @@ public class TourLog implements Prototype {
         this.topSpeed = tourLog.getTopSpeed();
         this.weather = tourLog.getWeather();
         this.numberOfBreaks = tourLog.getNumberOfBreaks();
+    }
+
+    public TourLog() {
+
     }
 
     public void setRating(Integer rating) {

@@ -5,109 +5,153 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<GridPane prefHeight="400.0" prefWidth="500" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="TourProject.Model.TourLog.TourLogController">
+<GridPane prefHeight="400.0" prefWidth="500" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <rowConstraints>
         <RowConstraints vgrow="ALWAYS" />
     </rowConstraints>
     <columnConstraints>
         <ColumnConstraints hgrow="ALWAYS" />
     </columnConstraints>
-    <ScrollPane GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
-        <AnchorPane prefHeight="350.0" prefWidth="400.0">
-            <VBox AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <ScrollPane fx:id="scrollPane" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+        <AnchorPane fx:id="anchorPane" prefHeight="768.0" prefWidth="481.0">
+            <VBox layoutX="10.0" layoutY="10.0" prefHeight="753.0" prefWidth="471.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
                 <children>
-                    <Label text="Datum" wrapText="true">
-                        <font>
-                            <Font size="14.0"/>
-                        </font>
-                        <VBox.margin>
-                            <Insets bottom="5.0" top="10.0"/>
-                        </VBox.margin>
-                    </Label>
-                    <DatePicker fx:id="date" promptText="Datum der Fahrt" showWeekNumbers="true"/>
+                    <HBox alignment="CENTER">
+                        <children>
+                            <VBox HBox.hgrow="ALWAYS">
+                                <children>
+                                    <Label text="Datum" textAlignment="CENTER" wrapText="true">
+                                        <font>
+                                            <Font size="14.0" />
+                                        </font>
+                                        <VBox.margin>
+                                            <Insets bottom="5.0" top="10.0" />
+                                        </VBox.margin>
+                                    </Label>
+                                    <DatePicker fx:id="date" promptText="Datum der Fahrt" showWeekNumbers="true" />
+                                </children>
+                            </VBox>
+                            <VBox HBox.hgrow="ALWAYS">
+                                <children>
+                                    <Label text="Uhrzeit (h : min)">
+                                        <font>
+                                            <Font size="14.0" />
+                                        </font>
+                                        <padding>
+                                            <Insets bottom="5.0" top="10.0" />
+                                        </padding>
+                                    </Label>
+                                    <HBox alignment="CENTER" prefWidth="200.0">
+                                        <children>
+                                            <ComboBox fx:id="timestampStunden" prefWidth="150.0" promptText="Stunden" />
+                                            <ComboBox fx:id="timestampMinuten" layoutX="10.0" layoutY="10.0" prefWidth="150.0" promptText="Minuten" />
+                                        </children>
+                                    </HBox>
+                                </children>
+                            </VBox>
+                        </children>
+                    </HBox>
                     <Label text="Report" wrapText="true">
                         <font>
-                            <Font size="14.0"/>
+                            <Font size="14.0" />
                         </font>
                         <VBox.margin>
-                            <Insets bottom="5.0" top="10.0"/>
+                            <Insets bottom="5.0" top="10.0" />
                         </VBox.margin>
                     </Label>
                     <TextField fx:id="report" promptText="Report eintragen">
                         <font>
-                            <Font size="14.0"/>
+                            <Font size="14.0" />
                         </font>
                     </TextField>
-                    <Label text="Distanz" wrapText="true">
-                        <font>
-                            <Font size="14.0"/>
-                        </font>
+                    <HBox>
+                        <children>
+                            <VBox HBox.hgrow="ALWAYS">
+                                <children>
+                                    <Label text="Distanz" wrapText="true">
+                                        <font>
+                                            <Font size="14.0" />
+                                        </font>
+                                        <VBox.margin>
+                                            <Insets bottom="5.0" top="10.0" />
+                                        </VBox.margin>
+                                    </Label>
+                                    <TextField fx:id="distance" promptText="Distanz eintragen">
+                                        <font>
+                                            <Font size="14.0" />
+                                        </font>
+                                    </TextField>
+                                </children>
+                                <padding>
+                                    <Insets right="5.0" />
+                                </padding>
+                            </VBox>
+                            <VBox HBox.hgrow="ALWAYS">
+                                <children>
+                                    <Label text="Dauer (h : min)" wrapText="true">
+                                        <font>
+                                            <Font size="14.0" />
+                                        </font>
+                                        <VBox.margin>
+                                            <Insets bottom="5.0" top="10.0" />
+                                        </VBox.margin>
+                                    </Label>
+                                    <HBox alignment="CENTER" prefWidth="200.0">
+                                        <children>
+                                            <ComboBox fx:id="dauerStunden" prefWidth="150.0" promptText="Stunden" />
+                                            <ComboBox fx:id="dauerMinuten" layoutX="10.0" layoutY="10.0" prefWidth="150.0" promptText="Minuten" />
+                                        </children>
+                                    </HBox>
+                                </children>
+                                <padding>
+                                    <Insets left="5.0" />
+                                </padding>
+                            </VBox>
+                        </children>
                         <VBox.margin>
-                            <Insets bottom="5.0" top="10.0"/>
+                            <Insets />
                         </VBox.margin>
-                    </Label>
-                    <TextField fx:id="distance" promptText="Distanz eintragen">
-                        <font>
-                            <Font size="14.0"/>
-                        </font>
-                    </TextField>
-                    <Label text="Dauer (hh:mm:ss)" wrapText="true">
-                        <font>
-                            <Font size="14.0"/>
-                        </font>
-                        <VBox.margin>
-                            <Insets bottom="5.0" top="10.0"/>
-                        </VBox.margin>
-                    </Label>
-                    <TextField fx:id="duration" promptText="Dauer eintragen: hh:mm:ss">
-                        <font>
-                            <Font size="14.0"/>
-                        </font>
-                    </TextField>
+                    </HBox>
                     <Label layoutX="20.0" layoutY="140.0" text="Bewertung" wrapText="true">
                         <font>
-                            <Font size="14.0"/>
+                            <Font size="14.0" />
                         </font>
                         <VBox.margin>
-                            <Insets bottom="5.0" top="10.0"/>
+                            <Insets bottom="5.0" top="10.0" />
                         </VBox.margin>
                     </Label>
                     <HBox alignment="CENTER" layoutX="20.0" layoutY="193.0">
                         <children>
-                            <Label fx:id="ratingLabel" text="5/10">
+                            <Label fx:id="ratingLabel" prefWidth="50.0" text="5/10">
                                 <font>
-                                    <Font name="System Bold" size="14.0"/>
+                                    <Font name="System Bold" size="14.0" />
                                 </font>
                                 <HBox.margin>
-                                    <Insets right="10.0"/>
+                                    <Insets right="10.0" />
                                 </HBox.margin>
                             </Label>
-                            <Slider fx:id="ratingSlider" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" min="1.0" minorTickCount="0"
-                                    showTickLabels="true" showTickMarks="true" snapToTicks="true" value="5.0"
-                                    HBox.hgrow="ALWAYS"/>
+                            <Slider fx:id="ratingSlider" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" min="1.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="5.0" HBox.hgrow="ALWAYS" />
                         </children>
                     </HBox>
                     <Label layoutX="20.0" layoutY="140.0" text="Maximale Steigung in %" wrapText="true">
                         <font>
-                            <Font size="14.0"/>
+                            <Font size="14.0" />
                         </font>
                         <VBox.margin>
-                            <Insets bottom="5.0" top="10.0"/>
+                            <Insets bottom="5.0" top="10.0" />
                         </VBox.margin>
                     </Label>
-                    <HBox alignment="CENTER" VBox.vgrow="SOMETIMES">
+                    <HBox alignment="CENTER">
                         <children>
-                            <Label fx:id="maxInclineLabel" text="5%">
+                            <Label fx:id="maxInclineLabel" prefWidth="50.0" text=" 5%">
                                 <font>
-                                    <Font name="System Bold" size="14.0"/>
+                                    <Font name="System Bold" size="14.0" />
                                 </font>
                                 <HBox.margin>
-                                    <Insets right="10.0"/>
+                                    <Insets right="10.0" />
                                 </HBox.margin>
                             </Label>
-                            <Slider fx:id="maxInclineSlider" blockIncrement="1.0" majorTickUnit="10.0" max="60.0" minorTickCount="4"
-                                    showTickLabels="true" showTickMarks="true" snapToTicks="true" value="5.0"
-                                    HBox.hgrow="ALWAYS"/>
+                            <Slider fx:id="maxInclineSlider" blockIncrement="1.0" majorTickUnit="10.0" max="60.0" minorTickCount="9" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="5.0" HBox.hgrow="ALWAYS" />
                         </children>
                     </HBox>
                     <Label layoutX="20.0" layoutY="168.0" text="Durchschnittliche Geschwindigkeit in km/h" wrapText="true">
@@ -120,7 +164,7 @@
                     </Label>
                     <HBox alignment="CENTER" layoutX="20.0" layoutY="193.0">
                         <children>
-                            <Label fx:id="avgSpeedLabel" text="15">
+                            <Label fx:id="avgSpeedLabel" prefWidth="60.0" text="10 km/h">
                                 <font>
                                     <Font name="System Bold" size="14.0" />
                                 </font>
@@ -128,7 +172,7 @@
                                     <Insets right="10.0" />
                                 </HBox.margin>
                             </Label>
-                            <Slider fx:id="avgSpeedSlider" blockIncrement="0.1" majorTickUnit="10.0" max="45.0" minorTickCount="9" showTickLabels="true" showTickMarks="true" value="15.0" HBox.hgrow="ALWAYS" />
+                            <Slider fx:id="avgSpeedSlider" blockIncrement="0.1" majorTickUnit="5.0" max="45.0" minorTickCount="4" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="10.0" HBox.hgrow="ALWAYS" />
                         </children>
                     </HBox>
                     <Label layoutX="20.0" layoutY="241.0" text="Topgeschwindigkeit in km/h" wrapText="true">
@@ -141,7 +185,7 @@
                     </Label>
                     <HBox alignment="CENTER" layoutX="20.0" layoutY="266.0">
                         <children>
-                            <Label fx:id="topSpeedLabel" text="20">
+                            <Label fx:id="topSpeedLabel" prefWidth="60.0" text="20 km/h">
                                 <font>
                                     <Font name="System Bold" size="14.0" />
                                 </font>
@@ -152,36 +196,36 @@
                             <Slider fx:id="topSpeedSlider" blockIncrement="0.1" majorTickUnit="10.0" max="65.0" min="5.0" minorTickCount="9" showTickLabels="true" showTickMarks="true" value="20.0" HBox.hgrow="ALWAYS" />
                         </children>
                     </HBox>
-               <Label layoutX="20.0" layoutY="103.0" text="Wetter" wrapText="true">
-                  <font>
-                     <Font size="14.0" />
-                  </font>
-                  <VBox.margin>
-                     <Insets bottom="5.0" top="10.0" />
-                  </VBox.margin>
-               </Label>
-               <TextField fx:id="weather" promptText="Wie war das Wetter?" />
-               <Label layoutX="20.0" layoutY="103.0" text="Anzahl der Stopps" wrapText="true">
-                  <font>
-                     <Font size="14.0" />
-                  </font>
-                  <VBox.margin>
-                     <Insets bottom="5.0" top="10.0" />
-                  </VBox.margin>
-               </Label>
-               <HBox alignment="CENTER" layoutX="20.0" layoutY="128.0">
-                  <children>
-                     <Label fx:id="breaksLabel" text="0">
+                    <Label layoutX="20.0" layoutY="103.0" text="Wetter" wrapText="true">
                         <font>
-                           <Font name="System Bold" size="14.0" />
+                            <Font size="14.0" />
                         </font>
-                        <HBox.margin>
-                           <Insets right="10.0" />
-                        </HBox.margin>
-                     </Label>
-                     <Slider fx:id="breaksSlider" blockIncrement="1.0" majorTickUnit="2.0" max="15.0" minorTickCount="1" showTickLabels="true" showTickMarks="true" HBox.hgrow="ALWAYS" />
-                  </children>
-               </HBox>
+                        <VBox.margin>
+                            <Insets bottom="5.0" top="10.0" />
+                        </VBox.margin>
+                    </Label>
+                    <TextField fx:id="weather" promptText="Wie war das Wetter?" />
+                    <Label layoutX="20.0" layoutY="103.0" text="Anzahl der Stopps" wrapText="true">
+                        <font>
+                            <Font size="14.0" />
+                        </font>
+                        <VBox.margin>
+                            <Insets bottom="5.0" top="10.0" />
+                        </VBox.margin>
+                    </Label>
+                    <HBox alignment="CENTER" layoutX="20.0" layoutY="128.0">
+                        <children>
+                            <Label fx:id="breaksLabel" prefWidth="25.0" text="0">
+                                <font>
+                                    <Font name="System Bold" size="14.0" />
+                                </font>
+                                <HBox.margin>
+                                    <Insets right="10.0" />
+                                </HBox.margin>
+                            </Label>
+                            <Slider fx:id="breaksSlider" blockIncrement="1.0" majorTickUnit="1.0" max="15.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" HBox.hgrow="ALWAYS" />
+                        </children>
+                    </HBox>
 
                     <HBox alignment="CENTER">
                         <Button fx:id="saveButton" defaultButton="true" mnemonicParsing="false" onAction="#save" style="-fx-background-color: #5cb85c; -fx-border-color: #398439;" text="Speichern" textFill="WHITE">
@@ -201,6 +245,9 @@
                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                 </padding>
             </VBox>
+            <padding>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+            </padding>
         </AnchorPane>
     </ScrollPane>
 </GridPane>

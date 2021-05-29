@@ -158,11 +158,11 @@ public class Controller implements Initializable {
         viewModel.removeTour();
     }
 
-    public void addTourLog(ActionEvent actionEvent) {
+    public void addTourLog(ActionEvent actionEvent) throws IOException {
         viewModel.addTourLog();
     }
 
-    public void removeTourLog(ActionEvent actionEvent) {
+    public void removeTourLog(ActionEvent actionEvent) throws IOException {
         viewModel.removeTourLog();
     }
 

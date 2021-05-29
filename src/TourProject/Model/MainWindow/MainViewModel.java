@@ -1,7 +1,11 @@
 package TourProject.Model.MainWindow;
 
 import TourProject.BusinessLayer.TourBusiness;
+import TourProject.BusinessLayer.TourLogBusiness;
 import TourProject.Model.CustomDialog.CustomDialogController;
+import TourProject.Model.TourLog.TourLogController;
+import TourProject.Model.TourLog.TourLogSubscriber;
+import TourProject.Model.TourLog.TourLogViewModel;
 import TourProject.Model.addTour.AddTourController;
 import TourProject.Model.addTour.AddTourViewModel;
 import TourProject.BusinessLayer.MainBusiness;
@@ -22,7 +26,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class MainViewModel implements TourSubscriber {
+public class MainViewModel implements TourSubscriber, TourLogSubscriber {
     // http://openbook.rheinwerk-verlag.de/javainsel/12_004.html
     private final StringProperty input = new SimpleStringProperty("");
     private final StringProperty tourLabel = new SimpleStringProperty("");
@@ -202,8 +206,23 @@ public class MainViewModel implements TourSubscriber {
         toursListing.add(tour);
     }
 
-    public void addTourLog() {
+    public void addTourLog() throws IOException {
+        Stage secondStage = new Stage();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../TourLog/TourLogWindow.fxml"));
+        var tourLogViewModel = new TourLogViewModel();
+        tourLogViewModel.setTourLogBusiness(new TourLogBusiness());
 
+        var tourLogController = new TourLogController(tourLogViewModel);
+        loader.setController(tourLogController);
+
+
+        secondStage.setTitle("Add Tour-Log");
+        secondStage.setScene(new Scene(loader.load()));
+        tourLogController.setSelectedTour(new TourLog());
+        tourLogController.getViewModel().setSelectedTour(new TourLog());
+        //controller.setSelectedTour(selectedTour.get(0));
+        tourLogController.getViewModel().addSubscriber(this);
+        secondStage.show();
     }
 
     public void removeTourLog() {
@@ -211,6 +230,16 @@ public class MainViewModel implements TourSubscriber {
     }
 
     public void editTourLog() {
+
+    }
+
+    @Override
+    public void updateEditedTourLog(TourLog tourLog) {
+
+    }
+
+    @Override
+    public void updateAddedTourLog(TourLog tourLog) {
 
     }
 }

@@ -44,6 +44,7 @@ public class TourLogController implements Initializable {
     public ComboBox<Integer> dauerStunden;
     public ComboBox<Integer> dauerMinuten;
     public ProgressIndicator progress;
+    public Label errorMessage;
     private TourLogViewModel viewModel;
 
     public TourLogController(TourLogViewModel tourLogViewModel) {
@@ -52,6 +53,8 @@ public class TourLogController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        errorMessage.setText("");
+        errorMessage.setVisible(false);
         ObservableList<Integer> stunden = FXCollections.observableArrayList();
         ObservableList<Integer> minuten = FXCollections.observableArrayList();
         ObservableList<Integer> stundenDauer = FXCollections.observableArrayList();
@@ -109,6 +112,7 @@ public class TourLogController implements Initializable {
         timestampMinuten.setCellFactory(minutenFactory);
         dauerStunden.setCellFactory(stundenFactory);
         dauerMinuten.setCellFactory(minutenFactory);
+
         timestampStunden.valueProperty().bindBidirectional(viewModel.getTimestampStunden());
         timestampMinuten.valueProperty().bindBidirectional(viewModel.getTimestampMinuten());
         dauerStunden.valueProperty().bindBidirectional(viewModel.getDauerStunden());
@@ -142,7 +146,7 @@ public class TourLogController implements Initializable {
         topSpeedSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
-                topSpeedLabel.setText(newValue.intValue() + " km/h");
+                topSpeedLabel.setText(Math.round(newValue.doubleValue() * 10.0) / 10.0 + " km/h");
             }
         });
         weather.textProperty().bindBidirectional(viewModel.getWeather());
@@ -153,12 +157,21 @@ public class TourLogController implements Initializable {
                 breaksLabel.setText(newValue.intValue() + "");
             }
         });
+        errorMessage.visibleProperty().bindBidirectional(viewModel.getErrorVisible());
+        errorMessage.textProperty().bindBidirectional(viewModel.getErrorMessage());
         scrollPane.setFitToWidth(true);
+        progress.visibleProperty().bindBidirectional(viewModel.getIsBusy());
+        saveButton.disableProperty().bindBidirectional(viewModel.getIsBusy());
+        cancelButton.disableProperty().bindBidirectional(viewModel.getIsBusy());
     }
 
     public void save (ActionEvent actionEvent) {
-        System.out.println(viewModel.getTimestampStunden().toString());
-        /*viewModel.save();*/
+        viewModel.save()
+                .whenComplete((success, error) -> {
+                    if (success) {
+                        cancel(null);
+                    }
+                });
     }
 
     public void cancel(ActionEvent actionEvent) {

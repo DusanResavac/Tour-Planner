@@ -43,6 +43,7 @@ public class Tour implements Prototype {
     }
 
     public Tour(Tour tour) {
+        this.tourId = tour.getTourId();
         this.name = tour.name;
         this.description = tour.description;
         this.distance = tour.distance;

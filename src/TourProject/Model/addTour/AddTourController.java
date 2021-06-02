@@ -55,7 +55,7 @@ public class AddTourController extends TourController implements Initializable {
 
 
     public void cancel(ActionEvent actionEvent) {
-        Platform.runLater(new Runnable(){
+        Platform.runLater(new Runnable() {
             @Override
             public void run() {
                 ((Stage) cancelButton.getScene().getWindow()).close();

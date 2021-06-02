@@ -23,19 +23,26 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import lombok.Getter;
 
 import java.io.IOException;
+import java.util.List;
 
 public class MainViewModel implements TourSubscriber, TourLogSubscriber {
     // http://openbook.rheinwerk-verlag.de/javainsel/12_004.html
     private final StringProperty input = new SimpleStringProperty("");
+    @Getter
     private final StringProperty tourLabel = new SimpleStringProperty("");
+    @Getter
     private final StringProperty tourDescription = new SimpleStringProperty("");
+    @Getter
+    private final StringProperty tourStartEnd = new SimpleStringProperty("");
 
     private final ObservableList<Tour> toursListing = FXCollections.observableArrayList();
     private final ObservableList<Tour> selectedTour = FXCollections.observableArrayList();
+    @Getter
+    private final ObservableList<TourLog> selectedTourLog = FXCollections.observableArrayList();
     private final ObservableList<TourLog> tourLogs = FXCollections.observableArrayList();
-    private boolean currentlyRemovingTour = false;
     private final MainBusiness mainBusiness;
 
     public MainViewModel() {
@@ -79,18 +86,27 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
     }
 
     public void setSelectedTour(Tour selectedItem) {
+        tourLogs.clear();
         if (selectedItem == null) {
+            mainBusiness.setSelectedTour(null);
+            tourLabel.setValue("");
+            tourDescription.setValue("");
+            tourStartEnd.setValue("");
+            selectedTour.clear();
             return;
         }
+        if (selectedItem.getImagePath() != null) {
+            setTourStartEnd(selectedItem.getStart(), selectedItem.getEnd(), selectedItem.getDistance());
+        }
+
         mainBusiness.setSelectedTour(selectedItem);
         tourLabel.setValue(selectedItem.getName());
         tourDescription.setValue(selectedItem.getDescription());
 
-        tourLogs.clear();
+        selectedTour.clear();
         if (selectedItem.getTourLogs() != null) {
             tourLogs.addAll(selectedItem.getTourLogs());
         }
-        selectedTour.clear();
         selectedTour.add(selectedItem);
     }
 
@@ -129,7 +145,7 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
                         dialog.showProcess(false);
                         // if an error occured, display an error message
 
-                        if (!tourRemoved || error != null) {
+                        if (error != null || tourRemoved == null || !tourRemoved) {
                             if (error != null) {
                                 error.printStackTrace();
                             }
@@ -153,6 +169,9 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
                             public void run() {
                                 for (int i = 0; i < toursListing.size(); i++) {
                                     if (toursListing.get(i).getTourId().equals(temp.getTourId())) {
+                                        if (selectedTour.get(0).getTourId().equals(toursListing.get(i).getTourId())) {
+                                            selectedTour.clear();
+                                        }
                                         toursListing.remove(i);
                                         break;
                                     }
@@ -183,7 +202,7 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
 
         secondStage.setTitle("Edit " + selectedTour.get(0).getName());
         secondStage.setScene(new Scene(loader.load()));
-        editTourController.getViewModel().setSelectedTour(selectedTour.get(0));
+        editTourController.getViewModel().setSelectedTour((Tour) selectedTour.get(0).clone());
         //controller.setSelectedTour(selectedTour.get(0));
         editTourController.getViewModel().addSubscriber(this);
         secondStage.show();
@@ -191,14 +210,38 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
     }
 
     @Override
-    public void updateEditedTour(Tour tour) {
+    public Tour updateEditedTour(Tour tour) {
         for (int i = 0; i < toursListing.size(); i++) {
-            if (toursListing.get(i).getTourId().equals(tour.getTourId())) {
-                toursListing.set(i, tour);
-                setSelectedTour(toursListing.get(i));
-                break;
+            Tour t = toursListing.get(i);
+            if (t.getTourId().equals(tour.getTourId())) {
+                Tour.TourBuilder temp = new Tour().builder();
+                if (tour.getStart() != null && tour.getEnd() != null && tour.getImagePath() != null) {
+                    temp
+                            .setStart(tour.getStart())
+                            .setEnd(tour.getEnd())
+                            .setImagePath(tour.getImagePath())
+                            .setDistance(tour.getDistance());
+                } else {
+                    temp
+                            .setStart(t.getStart())
+                            .setEnd(t.getEnd())
+                            .setImagePath(t.getImagePath())
+                            .setDistance(t.getDistance());
+                }
+                temp
+                        .setTourId(t.getTourId())
+                        .setDescription(tour.getDescription())
+                        .setName(tour.getName())
+                        .setTourLogs(tour.getTourLogs());
+
+                Tour builtTour = temp.build();
+                setTourStartEnd(builtTour.getStart(), builtTour.getEnd(), builtTour.getDistance());
+                toursListing.set(i, builtTour);
+                return builtTour;
             }
         }
+
+        return null;
     }
 
     @Override
@@ -207,10 +250,17 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
     }
 
     public void addTourLog() throws IOException {
+        if (selectedTour.size() == 0 || selectedTour.get(0) == null) {
+            CustomDialogController dialog = new CustomDialogController("Add tourlog error", "No Tour selected. Please select a tour before trying to add a tourlog.", true);
+            dialog.showAndWait();
+            return;
+        }
         Stage secondStage = new Stage();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("../TourLog/TourLogWindow.fxml"));
         var tourLogViewModel = new TourLogViewModel();
         tourLogViewModel.setTourLogBusiness(new TourLogBusiness());
+        tourLogViewModel.setSelectedTour(selectedTour.get(0));
+        tourLogViewModel.addSubscriber(this);
 
         var tourLogController = new TourLogController(tourLogViewModel);
         loader.setController(tourLogController);
@@ -219,14 +269,85 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
         secondStage.setTitle("Add Tour-Log");
         secondStage.setScene(new Scene(loader.load()));
         tourLogController.setSelectedTour(new TourLog());
-        tourLogController.getViewModel().setSelectedTour(new TourLog());
-        //controller.setSelectedTour(selectedTour.get(0));
-        tourLogController.getViewModel().addSubscriber(this);
         secondStage.show();
     }
 
     public void removeTourLog() {
+        if (selectedTourLog.size() == 0 || selectedTourLog.get(0) == null) {
+            CustomDialogController dialog = new CustomDialogController("Remove tourlog error", "No Tourlog selected. Please select a tourlog first.", true);
+            dialog.showAndWait();
+            return;
+        }
 
+        CustomDialogController dialog = new CustomDialogController("Removing tour", "A tour is currently being removed. Please wait till the process is finished.", false);
+        dialog.showProcess(true);
+        TourLog tempTourLog = (TourLog) selectedTourLog.get(0).clone();
+        // start tour removal
+        var thread = new Thread(() -> {
+            mainBusiness.removeTourLog(tempTourLog)
+                    .handle((tourLogRemoved, error) -> {
+                        dialog.showProcess(false);
+
+                        // if an error occured, display an error message
+                        if (error != null || tourLogRemoved == null || !tourLogRemoved) {
+                            if (error != null) {
+                                error.printStackTrace();
+                            }
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    dialog.setResult(Boolean.TRUE);
+                                    dialog.close();
+                                    var dialog2 = new CustomDialogController(
+                                            "Remove tourLog error",
+                                            "The selected tourLog could not be deleted. Please restart the application and try again or check whether the database server is running.",
+                                            true);
+                                    dialog2.showAndWait();
+                                }
+                            });
+
+                            return null;
+                        }
+
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                // delete it from the tourLogs tableview and clear selection
+                                for (int i = 0; i < tourLogs.size(); i++) {
+                                    TourLog t = tourLogs.get(i);
+                                    if (t.getId().equals(tempTourLog.getId())) {
+                                        tourLogs.remove(i);
+                                        break;
+                                    }
+                                }
+
+                                // delete it from the selected tour, so that it doesn't appear when the tour is selected
+                                // after switching to a different tour
+                                for (int i = 0; i < toursListing.size(); i++) {
+                                    Tour t = toursListing.get(i);
+                                    for (int b = 0; b < t.getTourLogs().size(); b++) {
+                                        TourLog tl = t.getTourLogs().get(b);
+                                        if (tl.getId().equals(tempTourLog.getId())) {
+                                            // if we found the tour with the corresponding log, delete it and refresh
+                                            // the view by setting the tour without the deleted log
+                                            List<TourLog> tlogs = t.getTourLogs();
+                                            tlogs.remove(b);
+                                            t.setTourLogs(tlogs);
+                                            toursListing.set(i, t);
+
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                        });
+
+                        return null;
+                    });
+        });
+        thread.start();
+        dialog.show();
     }
 
     public void editTourLog() {
@@ -240,6 +361,18 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
 
     @Override
     public void updateAddedTourLog(TourLog tourLog) {
+        for (Tour tour : toursListing) {
+            if (tour.getTourId().equals(tourLog.getTourId())) {
+                tour.getTourLogs().add(tourLog);
+                break;
+            }
+        }
+        if (selectedTour.size() > 0 && selectedTour.get(0).getTourId().equals(tourLog.getTourId())) {
+            tourLogs.add(tourLog);
+        }
+    }
 
+    public void setTourStartEnd (String start, String end, Double distance) {
+        tourStartEnd.set(start + " - " + end + " (" + (Math.round(distance * 10.0) / 10.0) + " km)");
     }
 }

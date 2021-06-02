@@ -11,7 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 
 import java.io.IOException;
@@ -37,6 +37,8 @@ public class Controller implements Initializable {
     public ImageView tourImage;
     public ScrollPane tourImageScrollPane;
     public Pane tourImageTab;
+    public Label tourStartEnd;
+    public FlowPane flowPane;
 
     public Controller()
     {
@@ -81,45 +83,25 @@ public class Controller implements Initializable {
         tourDistance.setCellValueFactory(new PropertyValueFactory<>("distance"));
         tourAvgSpeed.setCellValueFactory(new PropertyValueFactory<>("averageSpeed"));
 
+        tourStartEnd.textProperty().bindBidirectional(viewModel.getTourStartEnd());
+        flowPane.prefWrapLengthProperty().bind(tourImageScrollPane.widthProperty());
 
-        var selectionModel = toursListing.getSelectionModel();
-        ObservableList<Tour> selectedItems = selectionModel.getSelectedItems();
+        ObservableList<Tour> selectedItems = toursListing.getSelectionModel().getSelectedItems();
+        ObservableList<TourLog> selectedTourLogs = tourLogs.getSelectionModel().getSelectedItems();
+        selectedTourLogs.addListener(new ListChangeListener<TourLog>() {
+            @Override
+            public void onChanged(Change<? extends TourLog> change) {
+                tourLogListener(change);
+            }
+        });
         tourImageTab.minHeightProperty().bind(tourImageScrollPane.heightProperty());
+
         selectedItems.addListener(new ListChangeListener<Tour>() {
             @Override
             public void onChanged(Change<? extends Tour> change) {
-                System.out.println("Selection changed: " + change.getList());
-                if (change.getList().size() == 1) {
-                    viewModel.setSelectedTour((Tour) change.getList().get(0));
-                    tourLogs.setItems(viewModel.getTourLogs());
-                    var selectedTour = viewModel.getSelectedTour().size() > 0 ? viewModel.getSelectedTour().get(0) : null;
-                    if (selectedTour != null && selectedTour.getImagePath() != null) {
-                        System.out.println("Change image");
-                        String path;
-                        if (selectedTour.getImagePath().startsWith("http")) {
-                            path = selectedTour.getImagePath();
-                        } else {
-                            path = "file:@../../" + selectedTour.getImagePath();
-                        }
-                        tourImage.setImage(new Image(path));
-                        tourImage.fitWidthProperty().bind(tourImageTab.widthProperty());
-                        tourImage.fitHeightProperty().bind(tourImageTab.heightProperty());
-                        tourImageTab.minHeightProperty().bind(tourImageScrollPane.heightProperty());
-                        tourImage.maxWidth(500);
-                    }
-                }
+                tourListener(change);
             }
         });
-/*
-        toursListing.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                var b= toursListing.getSelectionModel();
-                viewModel.setSelectedTour((Tour) toursListing.getSelectionModel().getSelectedItem());
-                //tourImage.setImage(new Image(tours));
-
-            }
-        });*/
 
         viewModel.setupToursListing();
 
@@ -135,15 +117,49 @@ public class Controller implements Initializable {
         inputSearch.textProperty().bindBidirectional(viewModel.inputProperty());
     }
 
-    public void printText(MouseEvent mouseEvent) {
-        System.out.println("Clicked Label");
-        System.out.println(mouseEvent);
-        System.out.println(mouseEvent.getButton());
+    public void tourLogListener (ListChangeListener.Change<? extends TourLog> change) {
+        System.out.println("Selection changed (TourLog): " + change.getList());
+        viewModel.getSelectedTourLog().clear();
+        if (change.getList().size() == 1) {
+            viewModel.getSelectedTourLog().add(change.getList().get(0));
+        }
+        tourLogs.setItems(viewModel.getTourLogs());
+    }
+
+    public void tourListener (ListChangeListener.Change<? extends Tour> change) {
+        System.out.println("Selection changed: " + change.getList());
+        if (change.getList().size() == 1) {
+            viewModel.setSelectedTour((Tour) change.getList().get(0));
+
+            tourLogs.setItems(viewModel.getTourLogs());
+            var selectedTour = viewModel.getSelectedTour().size() > 0 ? viewModel.getSelectedTour().get(0) : null;
+
+            if (selectedTour != null && selectedTour.getImagePath() != null) {
+                System.out.println("Change image");
+
+                String path;
+                if (selectedTour.getImagePath().startsWith("http")) {
+                    path = selectedTour.getImagePath();
+                } else {
+                    path = "file:@../../" + selectedTour.getImagePath();
+                }
+
+                tourImage.setImage(new Image(path));
+                tourImage.fitWidthProperty().bind(tourImageTab.widthProperty());
+                tourImage.fitHeightProperty().bind(tourImageTab.heightProperty());
+                tourImageTab.minHeightProperty().bind(tourImageScrollPane.heightProperty());
+                tourImage.maxWidth(500);
+            }
+        } else {
+            viewModel.setSelectedTour(null);
+            tourImage.setImage(null);
+            //tourStartEnd.setText("");
+        }
     }
 
     public void search (ActionEvent actionEvent) {
         viewModel.searchButtonPressed();
-        toursListing.setItems(viewModel.getToursListing());
+        //toursListing.setItems(viewModel.getToursListing());
     }
 
     public void editTour(ActionEvent actionEvent) throws IOException {

@@ -3,12 +3,14 @@ package TourProject.BusinessLayer;
 import TourProject.DataAccessLayer.DataAccessLayer;
 import TourProject.DataAccessLayer.DatabaseLoader;
 import TourProject.Model.Tour.Tour;
+import TourProject.Model.TourLog.TourLog;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 public class MainBusiness {
     private final List<Tour> tours = FXCollections.observableArrayList();
@@ -70,5 +72,9 @@ public class MainBusiness {
             return false;
         });*/
         return dataAccessLayer.removeTour(tour);
+    }
+
+    public CompletionStage<Boolean> removeTourLog(TourLog selectedTourLog) {
+        return dataAccessLayer.removeTourLog(selectedTourLog);
     }
 }

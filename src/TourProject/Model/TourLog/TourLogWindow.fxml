@@ -164,7 +164,7 @@
                     </Label>
                     <HBox alignment="CENTER" layoutX="20.0" layoutY="193.0">
                         <children>
-                            <Label fx:id="avgSpeedLabel" prefWidth="60.0" text="10 km/h">
+                            <Label fx:id="avgSpeedLabel" prefWidth="70.0" text="10 km/h">
                                 <font>
                                     <Font name="System Bold" size="14.0" />
                                 </font>
@@ -185,7 +185,7 @@
                     </Label>
                     <HBox alignment="CENTER" layoutX="20.0" layoutY="266.0">
                         <children>
-                            <Label fx:id="topSpeedLabel" prefWidth="60.0" text="20 km/h">
+                            <Label fx:id="topSpeedLabel" prefWidth="70.0" text="20 km/h">
                                 <font>
                                     <Font name="System Bold" size="14.0" />
                                 </font>
@@ -226,7 +226,13 @@
                             <Slider fx:id="breaksSlider" blockIncrement="1.0" majorTickUnit="1.0" max="15.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" HBox.hgrow="ALWAYS" />
                         </children>
                     </HBox>
-
+                    <Label fx:id="errorMessage" alignment="CENTER" textFill="#d71b1b" wrapText="true" VBox.vgrow="SOMETIMES" text="Jfdsfd">
+                        <font>
+                            <Font size="14.0" />
+                        </font>
+                        <padding>
+                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                        </padding></Label>
                     <HBox alignment="CENTER">
                         <Button fx:id="saveButton" defaultButton="true" mnemonicParsing="false" onAction="#save" style="-fx-background-color: #5cb85c; -fx-border-color: #398439;" text="Speichern" textFill="WHITE">
                             <HBox.margin>

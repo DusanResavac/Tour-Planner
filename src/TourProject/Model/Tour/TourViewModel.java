@@ -1,6 +1,7 @@
 package TourProject.Model.Tour;
 
 import TourProject.BusinessLayer.ITourBusiness;
+import javafx.application.Platform;
 import javafx.beans.property.*;
 
 import java.util.ArrayList;
@@ -63,19 +64,18 @@ public abstract class TourViewModel {
                         checkFormValidity();
                         return false;
                     }
-                    Tour selectedTour = getSelectedTour();
 
-                    selectedTour.setTourId(insertedOrUpdatedTour.getTourId());
-                    selectedTour.setName(insertedOrUpdatedTour.getName());
-                    selectedTour.setDescription(insertedOrUpdatedTour.getDescription());
-                    selectedTour.setDistance(insertedOrUpdatedTour.getDistance());
-                    selectedTour.setImagePath(insertedOrUpdatedTour.getImagePath());
                     getSubscribers().forEach(sub -> {
-                        if (insert) {
-                            sub.updateAddedTour(selectedTour);
-                        } else {
-                            sub.updateEditedTour(selectedTour);
-                        }
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (insert) {
+                                    sub.updateAddedTour(insertedOrUpdatedTour);
+                                } else {
+                                    sub.updateEditedTour(insertedOrUpdatedTour);
+                                }
+                            }
+                        });
                     });
                     isBusy.set(false);
                     checkFormValidity();

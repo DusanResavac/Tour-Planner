@@ -26,6 +26,7 @@ public class TourLog implements Prototype {
     private Integer id = null;
     @Getter @Setter
     private Integer tourId = null;
+    // TODO: Change to modern Date Classes
     @Getter @Setter
     private Date datetime = null;
     @Getter @Setter

@@ -21,7 +21,7 @@ create table tourlog
     report           varchar(255),
     distance         double precision,
     /* save in seconds */
-    duration       integer,
+    duration         integer,
     rating           integer,
     /* 5 extra attributes */
     max_incline      double precision,

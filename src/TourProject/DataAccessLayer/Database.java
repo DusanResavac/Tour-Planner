@@ -3,11 +3,16 @@ package TourProject.DataAccessLayer;
 import TourProject.Model.Tour.Tour;
 import TourProject.Model.TourLog.TourLog;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 public class Database implements DataAccessLayer {
 
@@ -68,8 +73,8 @@ public class Database implements DataAccessLayer {
 
     @Override
     public CompletableFuture<Boolean> updateTour(Tour tour) {
-        // TODO: Update tour (all values that are not null)
         return CompletableFuture.supplyAsync(() -> {
+            // TODO: Delete old image if image is updated
             try (var stmt = connection.prepareStatement("""
                     update tour set  name = COALESCE(?, name),
                       description = COALESCE(?, description),
@@ -121,6 +126,79 @@ public class Database implements DataAccessLayer {
                     stmt.setInt(1, tour.getTourId());
                 }
                 var affectedRows = stmt.executeUpdate();
+                if (affectedRows > 0) {
+                    try {
+                        Files.deleteIfExists(Paths.get(tour.getImagePath()));
+                    } catch (IOException e ) {
+                        // TODO: Logging
+                        e.printStackTrace();
+                    } catch (InvalidPathException e) {
+                        // TODO: Logging
+                        System.err.println("Bild konnte nicht gelöscht werden: " + e.getMessage());
+                    }
+                }
+                return affectedRows > 0;
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+
+            return false;
+        });
+    }
+
+    @Override
+    public CompletableFuture<Long> insertTourLog(TourLog tourLog, Integer tourId) {
+        return CompletableFuture.supplyAsync(() -> {
+            try (var stmt = connection.prepareStatement(
+                    "insert into tourlog (tour, datetime, report, distance, duration, rating, max_incline, average_speed, top_speed, weather, number_of_breaks) " +
+                            "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+
+                stmt.setInt(1, tourId);
+                stmt.setTimestamp(2, new Timestamp(tourLog.getDatetime().getTime()));
+                stmt.setString(3, tourLog.getReport());
+                stmt.setDouble(4, Math.round(tourLog.getDistance() * 100.0) / 100.0);
+                stmt.setInt(5, tourLog.getDuration());
+                stmt.setInt(6, tourLog.getRating());
+                stmt.setDouble(7, tourLog.getMaxIncline());
+                stmt.setDouble(8, tourLog.getAverageSpeed());
+                stmt.setDouble(9, Math.round(tourLog.getTopSpeed() * 10.0) / 10.0);
+                stmt.setString(10, tourLog.getWeather());
+                stmt.setInt(11, tourLog.getNumberOfBreaks());
+
+                var affectedRows = stmt.executeUpdate();
+
+                if (affectedRows == 0) {
+                    throw new SQLException("Creating tour failed, no rows affected.");
+                }
+
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        return generatedKeys.getLong(1);
+                    } else {
+                        // TODO: Logging
+                        throw new SQLException("Creating tour failed, no ID obtained.");
+                    }
+                }
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+
+            return null;
+        });
+    }
+
+    @Override
+    public CompletableFuture<Boolean> updateTourLog(TourLog tourLog, Integer id, Integer tourId) {
+        return null;
+    }
+
+    @Override
+    public CompletionStage<Boolean> removeTourLog(TourLog selectedTourLog) {
+        return CompletableFuture.supplyAsync(() -> {
+            try (var stmt = connection.prepareStatement("delete from tourlog where id = ? and tour = ?")) {
+                stmt.setInt(1, selectedTourLog.getId());
+                stmt.setInt(2, selectedTourLog.getTourId());
+                int affectedRows = stmt.executeUpdate();
                 return affectedRows > 0;
             } catch (SQLException throwables) {
                 throwables.printStackTrace();

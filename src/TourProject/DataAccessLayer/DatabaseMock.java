@@ -1,9 +1,11 @@
 package TourProject.DataAccessLayer;
 
 import TourProject.Model.Tour.Tour;
+import TourProject.Model.TourLog.TourLog;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 public class DatabaseMock implements DataAccessLayer {
     @Override
@@ -33,6 +35,21 @@ public class DatabaseMock implements DataAccessLayer {
 
     @Override
     public CompletableFuture<Boolean> removeTour(Tour tour) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Long> insertTourLog(TourLog tourLog, Integer tourId) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Boolean> updateTourLog(TourLog tourLog, Integer id, Integer tourId) {
+        return null;
+    }
+
+    @Override
+    public CompletionStage<Boolean> removeTourLog(TourLog selectedTourLog) {
         return null;
     }
 }

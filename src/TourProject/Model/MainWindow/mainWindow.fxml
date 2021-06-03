@@ -230,9 +230,14 @@
                                 <columns>
                                     <TableColumn fx:id="tourDate" prefWidth="75.0" text="Date" />
                                     <TableColumn fx:id="tourDuration" prefWidth="75.0" text="Duration" />
+                                    <TableColumn fx:id="tourReport" prefWidth="75.0" text="Report"/>
                                     <TableColumn fx:id="tourDistance" prefWidth="75.0" text="Distance" />
                                     <TableColumn fx:id="tourAvgSpeed" prefWidth="75.0" text="Average SPD" />
-                                    <TableColumn prefWidth="75.0" text="..." />
+                                    <TableColumn fx:id="tourTopSpeed" prefWidth="75.0" text="Top SPD" />
+                                    <TableColumn fx:id="tourRating" prefWidth="75.0" text="Rating" />
+                                    <TableColumn fx:id="tourMaxIncline" prefWidth="75.0" text="Max Incline"/>
+                                    <TableColumn fx:id="tourWeather" prefWidth="75.0" text="Weather"/>
+                                    <TableColumn fx:id="tourBreaks" prefWidth="75.0" text="# of Breaks"/>
                                 </columns>
                             </TableView>
                         </VBox>

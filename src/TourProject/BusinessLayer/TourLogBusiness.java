@@ -6,6 +6,7 @@ import TourProject.Model.Tour.Tour;
 import TourProject.Model.TourLog.TourLog;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 public class TourLogBusiness implements ITourLogBusiness {
 
@@ -26,6 +27,14 @@ public class TourLogBusiness implements ITourLogBusiness {
                     }
 
                     return null;
+                });
+    }
+
+    @Override
+    public CompletionStage<TourLog> updateTourLog(TourLog tourLog) {
+        return database.updateTourLog(tourLog)
+                .thenApply(success -> {
+                    return success ? tourLog : null;
                 });
     }
 }

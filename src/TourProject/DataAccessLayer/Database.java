@@ -74,7 +74,23 @@ public class Database implements DataAccessLayer {
     @Override
     public CompletableFuture<Boolean> updateTour(Tour tour) {
         return CompletableFuture.supplyAsync(() -> {
-            // TODO: Delete old image if image is updated
+
+            // Delete current image if a new tour route was specified
+            if (tour.getImagePath() != null) {
+                try (var delImgStmt = connection.prepareStatement("select imagepath from tour where id = ?")) {
+                    delImgStmt.setInt(1, tour.getTourId());
+                    var imagePaths = delImgStmt.executeQuery();
+                    List<Tour> tourList = new ArrayList<>();
+                    while (imagePaths.next()) {
+                        Files.deleteIfExists(Paths.get(imagePaths.getString(1)));
+                    }
+
+                } catch (SQLException | IOException | InvalidPathException throwables) {
+                    // TODO: Add logging
+                    throwables.printStackTrace();
+                }
+            }
+
             try (var stmt = connection.prepareStatement("""
                     update tour set  name = COALESCE(?, name),
                       description = COALESCE(?, description),
@@ -156,12 +172,12 @@ public class Database implements DataAccessLayer {
                 stmt.setInt(1, tourId);
                 stmt.setTimestamp(2, new Timestamp(tourLog.getDatetime().getTime()));
                 stmt.setString(3, tourLog.getReport());
-                stmt.setDouble(4, Math.round(tourLog.getDistance() * 100.0) / 100.0);
+                stmt.setDouble(4, tourLog.getDistance());
                 stmt.setInt(5, tourLog.getDuration());
                 stmt.setInt(6, tourLog.getRating());
                 stmt.setDouble(7, tourLog.getMaxIncline());
                 stmt.setDouble(8, tourLog.getAverageSpeed());
-                stmt.setDouble(9, Math.round(tourLog.getTopSpeed() * 10.0) / 10.0);
+                stmt.setDouble(9, tourLog.getTopSpeed());
                 stmt.setString(10, tourLog.getWeather());
                 stmt.setInt(11, tourLog.getNumberOfBreaks());
 
@@ -188,8 +204,45 @@ public class Database implements DataAccessLayer {
     }
 
     @Override
-    public CompletableFuture<Boolean> updateTourLog(TourLog tourLog, Integer id, Integer tourId) {
-        return null;
+    public CompletableFuture<Boolean> updateTourLog(TourLog tourLog) {
+        return CompletableFuture.supplyAsync(() -> {
+            try (var stmt = connection.prepareStatement("""
+            update tourlog set  datetime = COALESCE(?, datetime),
+                                  report = COALESCE(?, report),
+                                  distance = COALESCE(?, distance),
+                                  duration = COALESCE(?, duration),
+                                  rating = COALESCE(?, rating),
+                                  max_incline = COALESCE(?, max_incline),
+                                  average_speed = COALESCE(?, average_speed),
+                                  top_speed = COALESCE(?, top_speed),
+                                  weather = COALESCE(?, weather),
+                                  number_of_breaks = COALESCE(?, number_of_breaks) where id = ? and tour = ?""")) {
+
+                stmt.setTimestamp(1, tourLog.getDatetime() == null ? null : new Timestamp(tourLog.getDatetime().getTime()));
+                stmt.setString(2, tourLog.getReport());
+                /*
+                Statt auf null jede Double/Int Variable zu prüfen, verwende ich hier setObject und gebe den Datentyp
+                als Parameter mit
+                */
+                stmt.setObject(3, tourLog.getDistance(), Types.DOUBLE);
+                stmt.setObject(4, tourLog.getDuration(), Types.INTEGER);
+                stmt.setObject(5, tourLog.getRating(), Types.INTEGER);
+                stmt.setObject(6, tourLog.getMaxIncline(), Types.DOUBLE);
+                stmt.setObject(7, tourLog.getAverageSpeed(), Types.DOUBLE);
+                stmt.setObject(8, tourLog.getTopSpeed(), Types.DOUBLE);
+                stmt.setString(9, tourLog.getWeather());
+                stmt.setObject(10, tourLog.getNumberOfBreaks(), Types.INTEGER);
+                stmt.setInt(11, tourLog.getId());
+                stmt.setInt(12, tourLog.getTourId());
+
+                int affectedRows = stmt.executeUpdate();
+                return affectedRows > 0;
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+
+            return false;
+        });
     }
 
     @Override

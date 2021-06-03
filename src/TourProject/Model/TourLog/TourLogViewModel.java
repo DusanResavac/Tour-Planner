@@ -108,12 +108,12 @@ public class TourLogViewModel {
                 selectedTour.getTourId(),
                 newDate,
                 report.get(),
-                Double.parseDouble(distance.get()),
+                Math.round(Double.parseDouble(distance.get()) * 100.0) / 100.0,
                 dauerStunden.get() * 60 * 60 + dauerMinuten.get() * 60,
                 (int) rating.get(),
                 maxIncline.get(),
                 avgSpeed.get(),
-                topSpeed.get(),
+                Math.round(topSpeed.get() * 10.0) / 10.0,
                 weather.get(),
                 (int) breaks.get());
 

@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -16,6 +17,9 @@ import javafx.scene.layout.Pane;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
@@ -29,16 +33,24 @@ public class Controller implements Initializable {
     public TableColumn tournameColumn;
     public Label tourLabel;
     public TableView tourLogs;
-    public TableColumn tourDate;
-    public TableColumn<TourLog, String> tourDuration;
-    public TableColumn tourDistance;
-    public TableColumn tourAvgSpeed;
+    public TableColumn<TourLog, Date> tourDate;
+    public TableColumn<TourLog, Integer> tourDuration;
+    public TableColumn<TourLog, Double> tourDistance;
+    public TableColumn<TourLog, String> tourReport;
+    public TableColumn<TourLog, Double> tourAvgSpeed;
+    public TableColumn<TourLog, Double> tourTopSpeed;
+    public TableColumn<TourLog, Integer> tourRating;
+    public TableColumn<TourLog, Double> tourMaxIncline;
+    public TableColumn<TourLog, String> tourWeather;
+    public TableColumn<TourLog, Integer> tourBreaks;
+
     public Label tourDescription;
     public ImageView tourImage;
     public ScrollPane tourImageScrollPane;
     public Pane tourImageTab;
     public Label tourStartEnd;
     public FlowPane flowPane;
+
 
     public Controller()
     {
@@ -66,8 +78,9 @@ public class Controller implements Initializable {
             result.append(minutes).append("min ");
         }
 
-        int seconds = duration;
-        result.append(seconds).append("s");
+        // Nicht notwendig, da nur minutengenaue Angaben gemacht werden können
+        /*int seconds = duration;
+        result.append(seconds).append("s");*/
         return result.toString();
     }
 
@@ -75,13 +88,57 @@ public class Controller implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         System.out.println("Controller init");
 
+
         tournameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         tourDate.setCellValueFactory(new PropertyValueFactory<>("datetime"));
-        tourDuration.setCellValueFactory(cellData -> {
-            return new SimpleStringProperty(formatDurationToString(cellData.getValue().getDuration()));
+        tourDate.setCellFactory(column -> {
+            TableCell<TourLog, Date> cell = new TableCell<TourLog, Date>() {
+                private SimpleDateFormat dateFormat = new SimpleDateFormat("dd. MMMMM, yyyy HH:mm");
+
+                @Override
+                protected void updateItem(Date item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if(empty) {
+                        setText(null);
+                    }
+                    else {
+                        setText(dateFormat.format(item));
+                    }
+                }
+            };
+
+            return cell;
+        });
+        tourDate.setOnEditStart(new EventHandler<TableColumn.CellEditEvent<TourLog, Date>>() {
+            @Override
+            public void handle(TableColumn.CellEditEvent<TourLog, Date> tourLogDateCellEditEvent) {
+                viewModel.editTourLogDate();
+            }
+        });
+        tourDuration.setCellValueFactory(new PropertyValueFactory<>("duration"));
+        tourDuration.setCellFactory(column -> {
+            TableCell<TourLog, Integer> cell = new TableCell<TourLog, Integer>() {
+
+                @Override
+                protected void updateItem(Integer item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setText(null);
+                    } else {
+                        setText(formatDurationToString(item));
+                    }
+                }
+            };
+            return cell;
         });
         tourDistance.setCellValueFactory(new PropertyValueFactory<>("distance"));
+        tourReport.setCellValueFactory(new PropertyValueFactory<>("report"));
         tourAvgSpeed.setCellValueFactory(new PropertyValueFactory<>("averageSpeed"));
+        tourTopSpeed.setCellValueFactory(new PropertyValueFactory<>("topSpeed"));
+        tourRating.setCellValueFactory(new PropertyValueFactory<>("rating"));
+        tourMaxIncline.setCellValueFactory(new PropertyValueFactory<>("maxIncline"));
+        tourWeather.setCellValueFactory(new PropertyValueFactory<>("weather"));
+        tourBreaks.setCellValueFactory(new PropertyValueFactory<>("numberOfBreaks"));
 
         tourStartEnd.textProperty().bindBidirectional(viewModel.getTourStartEnd());
         flowPane.prefWrapLengthProperty().bind(tourImageScrollPane.widthProperty());
@@ -107,6 +164,7 @@ public class Controller implements Initializable {
 
         toursListing.setItems(viewModel.getToursListing());
         tourLogs.setItems(viewModel.getTourLogs());
+        tourLogs.setEditable(true);
 
 
         /*

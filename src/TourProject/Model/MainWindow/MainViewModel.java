@@ -14,6 +14,8 @@ import TourProject.Model.Tour.TourSubscriber;
 import TourProject.Model.editTour.EditTourViewModel;
 import TourProject.Model.Tour.Tour;
 import TourProject.Model.TourLog.TourLog;
+import TourProject.Model.editTourLog.TourLogDatetime;
+import TourProject.Model.editTourLog.TourLogDatetimeVM;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
@@ -62,6 +64,7 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
     }
 
     public void setupToursListing() {
+        toursListing.clear();
         mainBusiness.retrieveTours().thenApplyAsync(tours -> {
             toursListing.addAll(mainBusiness.getTours());
             return null;
@@ -211,6 +214,7 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
 
     @Override
     public Tour updateEditedTour(Tour tour) {
+        // TODO: Neuladen oder Anpassen
         for (int i = 0; i < toursListing.size(); i++) {
             Tour t = toursListing.get(i);
             if (t.getTourId().equals(tour.getTourId())) {
@@ -351,16 +355,16 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
     }
 
     public void editTourLog() {
-
-    }
-
-    @Override
-    public void updateEditedTourLog(TourLog tourLog) {
-
+        CustomDialogController dialog = new CustomDialogController(
+                "Edit TourLog Information",
+                "Editing a tourlog can be achieved by clicking on a cell after selecting a tourlog.",
+                true);
+        dialog.showAndWait();
     }
 
     @Override
     public void updateAddedTourLog(TourLog tourLog) {
+        // TODO: Neuladen oder Anpassen?
         for (Tour tour : toursListing) {
             if (tour.getTourId().equals(tourLog.getTourId())) {
                 tour.getTourLogs().add(tourLog);
@@ -372,7 +376,67 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
         }
     }
 
-    public void setTourStartEnd (String start, String end, Double distance) {
+    public void setTourStartEnd(String start, String end, Double distance) {
         tourStartEnd.set(start + " - " + end + " (" + (Math.round(distance * 10.0) / 10.0) + " km)");
     }
+
+    public void editTourLogDate() {
+        Stage secondStage = new Stage();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../editTourLog/tourLogDatetime.fxml"));
+
+        var viewmodel = new TourLogDatetimeVM();
+        viewmodel.setTourLogBusiness(new TourLogBusiness());
+        viewmodel.setTourLog((TourLog) selectedTourLog.get(0).clone());
+        viewmodel.addSubscriber(this);
+
+        var tourLogController = new TourLogDatetime(viewmodel);
+        loader.setController(tourLogController);
+
+        try {
+            secondStage.setTitle("Edit Date and Time");
+            secondStage.setScene(new Scene(loader.load()));
+            secondStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void updateEditedTourLogDatetime(TourLog tourLog) {
+       /*
+       TODO: Entscheiden ob neugeladen oder angepasst werden soll
+       Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                setupToursListing();
+            }
+        });*/
+
+        // Bei der Tour, die den Log hat, müssen die tourlogs angepasst werden
+        for (int i = 0; i < toursListing.size(); i++) {
+            Tour t = toursListing.get(i);
+            if (t.getTourId().equals(tourLog.getTourId())) {
+                // Wenn's die richtige Tour ist, hol das richtige log
+                for (int b = 0; b < t.getTourLogs().size(); b++) {
+                    TourLog tl = t.getTourLogs().get(b);
+                    if (tl.getId().equals(tourLog.getId())) {
+                        tl.setDatetime(tourLog.getDatetime());
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+
+        // Tourlogs müssen geupdated werden
+        for (int i = 0; i < tourLogs.size(); i++) {
+            TourLog tl = tourLogs.get(i);
+            if (tl.getId().equals(tourLog.getId())) {
+                tl.setDatetime(tourLog.getDatetime());
+                tourLogs.set(i, tl);
+                break;
+            }
+        }
+    }
+
 }

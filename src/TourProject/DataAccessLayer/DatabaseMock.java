@@ -44,7 +44,7 @@ public class DatabaseMock implements DataAccessLayer {
     }
 
     @Override
-    public CompletableFuture<Boolean> updateTourLog(TourLog tourLog, Integer id, Integer tourId) {
+    public CompletableFuture<Boolean> updateTourLog(TourLog tourLog) {
         return null;
     }
 

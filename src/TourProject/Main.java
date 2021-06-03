@@ -10,15 +10,15 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
 
         Config config = Config.getInstance();
-        //TourAPILoader.getInstance().getTourAPI().getRouteInformation("Rautenstrauchgasse 6, Wien, Austria", "Mautner-Markhof-Gasse 74, Wien, Austria", 1);
-        //System.out.println(TourAPILoader.getInstance().getTourAPI().getRouteInformation("Denver, USA", "Washington, USA", 1));
-        //System.out.println((String)config.getAttribute("apiKey"));
 
         // fxml created with SceneBuilder
         Parent root = FXMLLoader.load(getClass().getResource("Model/MainWindow/mainWindow.fxml"));

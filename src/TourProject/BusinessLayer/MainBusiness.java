@@ -137,6 +137,7 @@ public class MainBusiness {
             }
             if (!addedTour && (isEmpty ||
                     tour.getName().toLowerCase().contains(text) ||
+                    tour.getDescription().toLowerCase().contains(text) ||
                     tour.getStart().toLowerCase().contains(text) ||
                     tour.getEnd().toLowerCase().contains(text))) {
                 tempTours.add(tour);

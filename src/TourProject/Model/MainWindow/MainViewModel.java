@@ -16,6 +16,8 @@ import TourProject.Model.Tour.Tour;
 import TourProject.Model.TourLog.TourLog;
 import TourProject.Model.editTourLog.TourLogDatetime;
 import TourProject.Model.editTourLog.TourLogDatetimeVM;
+import TourProject.Model.editTourLog.TourLogDuration;
+import TourProject.Model.editTourLog.TourLogDurationVM;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
@@ -24,14 +26,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import lombok.Getter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MainViewModel implements TourSubscriber, TourLogSubscriber {
@@ -142,6 +145,13 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
             return;
         }
         Tour temp = selectedTour.get(0);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Delete tour \""+ temp.getName() + "\"?", ButtonType.YES, ButtonType.NO);
+        alert.showAndWait();
+
+        if (alert.getResult() == ButtonType.NO) {
+            return;
+        }
+
         CustomDialogController dialog = new CustomDialogController("Removing tour", "A tour is currently being removed. Please wait till the process is finished.", false);
         dialog.showProcess(true);
 
@@ -183,6 +193,10 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
                                         break;
                                     }
                                 }
+
+                                // MainBusiness Tours aktualisieren
+                                mainBusiness.getTours().clear();
+                                mainBusiness.getTours().addAll(toursListing);
                             }
                         });
 
@@ -216,54 +230,6 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
 
     }
 
-    @Override
-    public Tour updateEditedTour(Tour tour) {
-        // TODO: Neuladen oder Anpassen
-        for (int i = 0; i < toursListing.size(); i++) {
-            Tour t = toursListing.get(i);
-            if (t.getTourId().equals(tour.getTourId())) {
-                Tour.TourBuilder temp = new Tour().builder();
-                if (tour.getStart() != null && tour.getEnd() != null && tour.getImagePath() != null) {
-                    temp
-                            .setStart(tour.getStart())
-                            .setEnd(tour.getEnd())
-                            .setImagePath(tour.getImagePath())
-                            .setDistance(tour.getDistance());
-                } else {
-                    temp
-                            .setStart(t.getStart())
-                            .setEnd(t.getEnd())
-                            .setImagePath(t.getImagePath())
-                            .setDistance(t.getDistance());
-                }
-                temp
-                        .setTourId(t.getTourId())
-                        .setDescription(tour.getDescription())
-                        .setName(tour.getName())
-                        .setTourLogs(tour.getTourLogs());
-
-                Tour builtTour = temp.build();
-                setTourStartEnd(builtTour.getStart(), builtTour.getEnd(), builtTour.getDistance());
-                toursListing.set(i, builtTour);
-
-                mainBusiness.getTours().clear();
-                mainBusiness.getTours().addAll(toursListing);
-                return builtTour;
-            }
-        }
-
-        mainBusiness.getTours().clear();
-        mainBusiness.getTours().addAll(toursListing);
-        return null;
-    }
-
-    @Override
-    public void updateAddedTour(Tour tour) {
-        toursListing.add(tour);
-
-        mainBusiness.getTours().clear();
-        mainBusiness.getTours().addAll(toursListing);
-    }
 
     public void addTourLog() throws IOException {
         if (selectedTour.size() == 0 || selectedTour.get(0) == null) {
@@ -356,6 +322,10 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
                                         }
                                     }
                                 }
+
+                                // mainBusiness Tours aktualisieren
+                                mainBusiness.getTours().clear();
+                                mainBusiness.getTours().addAll(toursListing);
                             }
                         });
 
@@ -374,21 +344,6 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
         dialog.showAndWait();
     }
 
-    @Override
-    public void updateAddedTourLog(TourLog tourLog) {
-        // TODO: Neuladen oder Anpassen?
-        for (Tour tour : toursListing) {
-            if (tour.getTourId().equals(tourLog.getTourId())) {
-                tour.getTourLogs().add(tourLog);
-                break;
-            }
-        }
-        if (selectedTour.size() > 0 && selectedTour.get(0).getTourId().equals(tourLog.getTourId())) {
-            tourLogs.add(tourLog);
-        }
-        mainBusiness.getTours().clear();
-        mainBusiness.getTours().addAll(toursListing);
-    }
 
     public void setTourStartEnd(String start, String end, Double distance) {
         tourStartEnd.set(start + " - " + end + " (" + (Math.round(distance * 10.0) / 10.0) + " km)");
@@ -415,6 +370,93 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
         }
     }
 
+    public void editTourLogDuration() {
+        Stage secondStage = new Stage();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../editTourLog/tourLogDuration.fxml"));
+
+        var viewmodel = new TourLogDurationVM();
+        viewmodel.setTourLogBusiness(new TourLogBusiness());
+        viewmodel.setTourLog((TourLog) selectedTourLog.get(0).clone());
+        viewmodel.addSubscriber(this);
+
+        var tourLogController = new TourLogDuration(viewmodel);
+        loader.setController(tourLogController);
+
+        try {
+            secondStage.setTitle("Edit Duration");
+            secondStage.setScene(new Scene(loader.load()));
+            secondStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void updateAddedTour(Tour tour) {
+        toursListing.add(tour);
+
+        mainBusiness.getTours().clear();
+        mainBusiness.getTours().addAll(toursListing);
+    }
+
+    @Override
+    public void updateAddedTourLog(TourLog tourLog) {
+        // TODO: Neuladen oder Anpassen?
+        for (Tour tour : toursListing) {
+            if (tour.getTourId().equals(tourLog.getTourId())) {
+                tour.getTourLogs().add(tourLog);
+                break;
+            }
+        }
+        if (selectedTour.size() > 0 && selectedTour.get(0).getTourId().equals(tourLog.getTourId())) {
+            tourLogs.add(tourLog);
+        }
+
+        mainBusiness.getTours().clear();
+        mainBusiness.getTours().addAll(toursListing);
+    }
+
+    @Override
+    public Tour updateEditedTour(Tour tour) {
+        // TODO: Neuladen oder Anpassen
+        for (int i = 0; i < toursListing.size(); i++) {
+            Tour t = toursListing.get(i);
+            if (t.getTourId().equals(tour.getTourId())) {
+                Tour.TourBuilder temp = new Tour().builder();
+                if (tour.getStart() != null && tour.getEnd() != null && tour.getImagePath() != null) {
+                    temp
+                            .setStart(tour.getStart())
+                            .setEnd(tour.getEnd())
+                            .setImagePath(tour.getImagePath())
+                            .setDistance(tour.getDistance());
+                } else {
+                    temp
+                            .setStart(t.getStart())
+                            .setEnd(t.getEnd())
+                            .setImagePath(t.getImagePath())
+                            .setDistance(t.getDistance());
+                }
+                temp
+                        .setTourId(t.getTourId())
+                        .setDescription(tour.getDescription())
+                        .setName(tour.getName())
+                        .setTourLogs(tour.getTourLogs());
+
+                Tour builtTour = temp.build();
+                setTourStartEnd(builtTour.getStart(), builtTour.getEnd(), builtTour.getDistance());
+                toursListing.set(i, builtTour);
+
+                mainBusiness.getTours().clear();
+                mainBusiness.getTours().addAll(toursListing);
+                return builtTour;
+            }
+        }
+
+        mainBusiness.getTours().clear();
+        mainBusiness.getTours().addAll(toursListing);
+        return null;
+    }
+
     @Override
     public void updateEditedTourLogDatetime(TourLog tourLog) {
        /*
@@ -425,35 +467,96 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
                 setupToursListing();
             }
         });*/
+        updateEditedTour(tourLog, "datetime");
+    }
 
-        // Bei der Tour, die den Log hat, müssen die tourlogs angepasst werden
-        for (int i = 0; i < toursListing.size(); i++) {
-            Tour t = toursListing.get(i);
-            if (t.getTourId().equals(tourLog.getTourId())) {
-                // Wenn's die richtige Tour ist, hol das richtige log
-                for (int b = 0; b < t.getTourLogs().size(); b++) {
-                    TourLog tl = t.getTourLogs().get(b);
-                    if (tl.getId().equals(tourLog.getId())) {
-                        tl.setDatetime(tourLog.getDatetime());
-                        break;
-                    }
-                }
-                break;
+    @Override
+    public void updateEditedTourLogDuration(TourLog tourLog) {
+       /*
+       TODO: Entscheiden ob neugeladen oder angepasst werden soll
+       Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                setupToursListing();
             }
+        });*/
+
+        updateEditedTour(tourLog, "duration");
+    }
+
+    /**
+     * Vereinfacht das Updaten von einzelnen TourLog Werten in der TourListing und tourLogs Tableview,
+     * indem über Reflection die richtigen Methoden aufgerufen werden
+     * @param tourLog der Tourlog mit den neuen Informationen
+     * @param attributeName der Attributname des TourLogs bestimmt welches Attribut verändert werden soll
+     */
+    public void updateEditedTour(TourLog tourLog, String attributeName) {
+        final Map<String, AttributeMapper> attributeMapper = Map.ofEntries(
+                Map.entry("datetime", new AttributeMapper("getDatetime", "setDatetime", Date.class)),
+                Map.entry("report", new AttributeMapper("getReport", "setReport", String.class)),
+                Map.entry("distance", new AttributeMapper("getDistance", "setDistance", Double.class)),
+                Map.entry("duration", new AttributeMapper("getDuration", "setDuration", Integer.class)),
+                Map.entry("rating", new AttributeMapper("getRating", "setRating", Integer.class)),
+                Map.entry("maxIncline", new AttributeMapper("getMaxIncline", "setMaxIncline", Double.class)),
+                Map.entry("averageSpeed", new AttributeMapper("getAverageSpeed", "setAverageSpeed", Double.class)),
+                Map.entry("topSpeed", new AttributeMapper("getTopSpeed", "setTopSpeed", Double.class)),
+                Map.entry("weather", new AttributeMapper("getWeather", "setWeather", String.class)),
+                Map.entry("numberOfBreaks", new AttributeMapper("getNumberOfBreaks", "setNumberOfBreaks", Integer.class))
+        );
+        if (attributeMapper.get(attributeName) == null) {
+            System.err.println("Attribute unknown: " + attributeName);
+            return;
         }
+        try {
+            AttributeMapper attributeMapped = attributeMapper.get(attributeName);
 
-        // Tourlogs müssen geupdated werden
-        for (int i = 0; i < tourLogs.size(); i++) {
-            TourLog tl = tourLogs.get(i);
-            if (tl.getId().equals(tourLog.getId())) {
-                tl.setDatetime(tourLog.getDatetime());
-                tourLogs.set(i, tl);
-                break;
+            Method methodGet = tourLog.getClass().getMethod(attributeMapped.getGetAttribute());
+            Method methodSet = tourLog.getClass().getMethod(attributeMapped.getSetAttribute(), attributeMapped.getAttributeClass());
+
+            for (int i = 0; i < toursListing.size(); i++) {
+                Tour t = toursListing.get(i);
+                if (t.getTourId().equals(tourLog.getTourId())) {
+                    // Wenn's die richtige Tour ist, hol das richtige log
+                    for (int b = 0; b < t.getTourLogs().size(); b++) {
+                        TourLog tl = t.getTourLogs().get(b);
+                        if (tl.getId().equals(tourLog.getId())) {
+                            methodSet.invoke(tl, methodGet.invoke(tourLog));
+                            /*tl.setDuration(tourLog.getDuration());*/
+                            break;
+                        }
+                    }
+                    break;
+                }
             }
+
+            // TourLogs müssen geupdated werden
+            for (int i = 0; i < tourLogs.size(); i++) {
+                TourLog tl = tourLogs.get(i);
+                if (tl.getId().equals(tourLog.getId())) {
+                    methodSet.invoke(tl, methodGet.invoke(tourLog));
+                    /*tl.setDuration(tourLog.getDuration());*/
+                    tourLogs.set(i, tl);
+                    break;
+                }
+            }
+
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            e.printStackTrace();
         }
 
         mainBusiness.getTours().clear();
         mainBusiness.getTours().addAll(toursListing);
     }
 
+    public void saveTourLogChanges(TourLog t, String attribute) {
+        TourLogBusiness b = new TourLogBusiness();
+        b.updateTourLog(t)
+                .handle((tourLog, error) -> {
+                    if (tourLog != null && error == null) {
+                        // TODO: Anpassen oder neuladen?
+                        updateEditedTour(tourLog, attribute);
+                    }
+                    return null;
+                });
+    }
 }

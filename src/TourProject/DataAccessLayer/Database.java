@@ -82,7 +82,10 @@ public class Database implements DataAccessLayer {
                     var imagePaths = delImgStmt.executeQuery();
                     List<Tour> tourList = new ArrayList<>();
                     while (imagePaths.next()) {
-                        Files.deleteIfExists(Paths.get(imagePaths.getString(1)));
+                        String imagePath = imagePaths.getString(1);
+                        if (imagePath != null) {
+                            Files.deleteIfExists(Paths.get(imagePath));
+                        }
                     }
 
                 } catch (SQLException | IOException | InvalidPathException throwables) {
@@ -151,6 +154,8 @@ public class Database implements DataAccessLayer {
                     } catch (InvalidPathException e) {
                         // TODO: Logging
                         System.err.println("Bild konnte nicht gelöscht werden: " + e.getMessage());
+                    } catch (NullPointerException e) {
+                        System.err.println("Bild konte nicht gelöscht werden - tour besitzt keinen Bildpfad: " + e.getMessage());
                     }
                 }
                 return affectedRows > 0;

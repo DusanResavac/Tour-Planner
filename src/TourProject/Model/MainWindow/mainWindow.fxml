@@ -31,7 +31,8 @@
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Close" />
+                        <MenuItem mnemonicParsing="false" text="Export Tours" onAction="#exportTours" />
+                        <MenuItem mnemonicParsing="false" text="Export selected tour" onAction="#exportTour" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">
@@ -231,11 +232,11 @@
                                     <TableColumn fx:id="tourDate" prefWidth="75.0" text="Date" />
                                     <TableColumn fx:id="tourDuration" prefWidth="75.0" text="Duration" />
                                     <TableColumn fx:id="tourReport" prefWidth="75.0" text="Report"/>
-                                    <TableColumn fx:id="tourDistance" prefWidth="75.0" text="Distance" />
-                                    <TableColumn fx:id="tourAvgSpeed" prefWidth="75.0" text="Average SPD" />
-                                    <TableColumn fx:id="tourTopSpeed" prefWidth="75.0" text="Top SPD" />
-                                    <TableColumn fx:id="tourRating" prefWidth="75.0" text="Rating" />
-                                    <TableColumn fx:id="tourMaxIncline" prefWidth="75.0" text="Max Incline"/>
+                                    <TableColumn fx:id="tourDistance" prefWidth="75.0" text="Distance km" />
+                                    <TableColumn fx:id="tourAvgSpeed" prefWidth="75.0" text="Average SPD km/h" />
+                                    <TableColumn fx:id="tourTopSpeed" prefWidth="75.0" text="Top SPD km/h" />
+                                    <TableColumn fx:id="tourRating" prefWidth="75.0" text="Rating x/10" />
+                                    <TableColumn fx:id="tourMaxIncline" prefWidth="75.0" text="Max Incline %"/>
                                     <TableColumn fx:id="tourWeather" prefWidth="75.0" text="Weather"/>
                                     <TableColumn fx:id="tourBreaks" prefWidth="75.0" text="# of Breaks"/>
                                 </columns>

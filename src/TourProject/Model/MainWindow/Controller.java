@@ -1,8 +1,8 @@
 package TourProject.Model.MainWindow;
 
+import TourProject.DataAccessLayer.Config;
 import TourProject.Model.Tour.Tour;
 import TourProject.Model.TourLog.TourLog;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -10,12 +10,18 @@ import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
+import javafx.util.converter.DoubleStringConverter;
+import javafx.util.converter.IntegerStringConverter;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -87,7 +93,7 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         System.out.println("Controller init");
-
+        tourLogs.setEditable(true);
 
         tournameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         tourDate.setCellValueFactory(new PropertyValueFactory<>("datetime"));
@@ -131,14 +137,68 @@ public class Controller implements Initializable {
             };
             return cell;
         });
+        tourDuration.setOnEditStart(new EventHandler<TableColumn.CellEditEvent<TourLog, Integer>>() {
+            @Override
+            public void handle(TableColumn.CellEditEvent<TourLog, Integer> tourLogIntegerCellEditEvent) {
+                viewModel.editTourLogDuration();
+            }
+        });
         tourDistance.setCellValueFactory(new PropertyValueFactory<>("distance"));
+        tourDistance.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
+        tourDistance.setOnEditCommit(event -> {
+            TourLog t = createEmptyTourLog(event.getRowValue());
+            t.setDistance(event.getNewValue());
+            viewModel.saveTourLogChanges(t, "distance");
+        });
         tourReport.setCellValueFactory(new PropertyValueFactory<>("report"));
+        tourReport.setCellFactory(TextFieldTableCell.forTableColumn());
+        tourReport.setOnEditCommit(event -> {
+            TourLog t = createEmptyTourLog(event.getRowValue());
+            t.setReport(event.getNewValue());
+            viewModel.saveTourLogChanges(t, "report");
+        });
         tourAvgSpeed.setCellValueFactory(new PropertyValueFactory<>("averageSpeed"));
+        tourAvgSpeed.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
+        tourAvgSpeed.setOnEditCommit(event -> {
+            TourLog t = createEmptyTourLog(event.getRowValue());
+            t.setAverageSpeed(event.getNewValue());
+            viewModel.saveTourLogChanges(t, "averageSpeed");
+        });
         tourTopSpeed.setCellValueFactory(new PropertyValueFactory<>("topSpeed"));
+        tourTopSpeed.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
+        tourTopSpeed.setOnEditCommit(event -> {
+            TourLog t = createEmptyTourLog(event.getRowValue());
+            t.setTopSpeed(event.getNewValue());
+            viewModel.saveTourLogChanges(t, "topSpeed");
+        });
         tourRating.setCellValueFactory(new PropertyValueFactory<>("rating"));
+        tourRating.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        tourRating.setOnEditCommit(event -> {
+            TourLog t = createEmptyTourLog(event.getRowValue());
+            t.setRating(Math.min(Math.max(event.getNewValue(), 0), 10));
+            viewModel.saveTourLogChanges(t, "rating");
+        });
         tourMaxIncline.setCellValueFactory(new PropertyValueFactory<>("maxIncline"));
+        tourMaxIncline.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
+        tourMaxIncline.setOnEditCommit(event -> {
+            TourLog t = createEmptyTourLog(event.getRowValue());
+            t.setMaxIncline(event.getNewValue());
+            viewModel.saveTourLogChanges(t, "maxIncline");
+        });
         tourWeather.setCellValueFactory(new PropertyValueFactory<>("weather"));
+        tourWeather.setCellFactory(TextFieldTableCell.forTableColumn());
+        tourWeather.setOnEditCommit(event -> {
+            TourLog t = createEmptyTourLog(event.getRowValue());
+            t.setWeather(event.getNewValue());
+            viewModel.saveTourLogChanges(t, "weather");
+        });
         tourBreaks.setCellValueFactory(new PropertyValueFactory<>("numberOfBreaks"));
+        tourBreaks.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        tourBreaks.setOnEditCommit(event -> {
+            TourLog t = createEmptyTourLog(event.getRowValue());
+            t.setNumberOfBreaks(event.getNewValue());
+            viewModel.saveTourLogChanges(t, "numberOfBreaks");
+        });
 
         tourStartEnd.textProperty().bindBidirectional(viewModel.getTourStartEnd());
         flowPane.prefWrapLengthProperty().bind(tourImageScrollPane.widthProperty());
@@ -164,7 +224,7 @@ public class Controller implements Initializable {
 
         toursListing.setItems(viewModel.getToursListing());
         tourLogs.setItems(viewModel.getTourLogs());
-        tourLogs.setEditable(true);
+
 
 
         /*
@@ -173,6 +233,13 @@ public class Controller implements Initializable {
         tourDescription.textProperty().bindBidirectional(viewModel.tourDescription());
         tourLabel.textProperty().bindBidirectional(viewModel.tourLabel());
         inputSearch.textProperty().bindBidirectional(viewModel.inputProperty());
+    }
+
+    private TourLog createEmptyTourLog (TourLog tourLog) {
+        TourLog tl = new TourLog();
+        tl.setId(tourLog.getId());
+        tl.setTourId(tourLog.getTourId());
+        return tl;
     }
 
     public void tourLogListener (ListChangeListener.Change<? extends TourLog> change) {
@@ -244,4 +311,15 @@ public class Controller implements Initializable {
         viewModel.editTourLog();
     }
 
+    public void exportTours(ActionEvent actionEvent) {
+        try {
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void exportTour(ActionEvent actionEvent) {
+
+    }
 }

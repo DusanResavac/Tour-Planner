@@ -10,9 +10,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class Main extends Application {
 
     @Override

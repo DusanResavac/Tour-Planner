@@ -28,7 +28,11 @@ import javafx.stage.Stage;
 import lombok.Getter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class MainViewModel implements TourSubscriber, TourLogSubscriber {
     // http://openbook.rheinwerk-verlag.de/javainsel/12_004.html
@@ -85,7 +89,7 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
 
     public void searchButtonPressed() {
         toursListing.clear();
-        toursListing.addAll(mainBusiness.search(input.get()));
+        toursListing.addAll(mainBusiness.search(input.get(), mainBusiness.getTours()));
     }
 
     public void setSelectedTour(Tour selectedItem) {
@@ -241,16 +245,24 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
                 Tour builtTour = temp.build();
                 setTourStartEnd(builtTour.getStart(), builtTour.getEnd(), builtTour.getDistance());
                 toursListing.set(i, builtTour);
+
+                mainBusiness.getTours().clear();
+                mainBusiness.getTours().addAll(toursListing);
                 return builtTour;
             }
         }
 
+        mainBusiness.getTours().clear();
+        mainBusiness.getTours().addAll(toursListing);
         return null;
     }
 
     @Override
     public void updateAddedTour(Tour tour) {
         toursListing.add(tour);
+
+        mainBusiness.getTours().clear();
+        mainBusiness.getTours().addAll(toursListing);
     }
 
     public void addTourLog() throws IOException {
@@ -374,6 +386,8 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
         if (selectedTour.size() > 0 && selectedTour.get(0).getTourId().equals(tourLog.getTourId())) {
             tourLogs.add(tourLog);
         }
+        mainBusiness.getTours().clear();
+        mainBusiness.getTours().addAll(toursListing);
     }
 
     public void setTourStartEnd(String start, String end, Double distance) {
@@ -437,6 +451,9 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
                 break;
             }
         }
+
+        mainBusiness.getTours().clear();
+        mainBusiness.getTours().addAll(toursListing);
     }
 
 }

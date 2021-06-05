@@ -42,6 +42,17 @@
             <Insets bottom="10.0" />
          </VBox.margin>
       </TextArea>
+      <CheckBox fx:id="openAICheckbox" mnemonicParsing="false" text="OpenAI für Texterzeugung benutzen">
+         <font>
+            <Font size="14.0" />
+         </font>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+         <padding>
+            <Insets bottom="5.0" />
+         </padding>
+      </CheckBox>
       <Label fx:id="routeMessage" text="Strecke - ACHTUNG: Beides leer lassen, wenn es nicht geändert werden soll" wrapText="true">
          <font>
             <Font size="14.0" />

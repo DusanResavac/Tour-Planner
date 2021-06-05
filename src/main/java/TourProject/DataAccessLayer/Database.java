@@ -1,5 +1,6 @@
 package TourProject.DataAccessLayer;
 
+import TourProject.BusinessLayer.Log4J;
 import TourProject.Model.Tour.Tour;
 import TourProject.Model.TourLog.TourLog;
 
@@ -11,8 +12,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 
 public class Database implements DataAccessLayer {
 
@@ -58,12 +61,12 @@ public class Database implements DataAccessLayer {
                     if (generatedKeys.next()) {
                         return generatedKeys.getLong(1);
                     } else {
-                        // TODO: Logging
+                        Log4J.logger.error("Could not insert tour, no ID obtained");
                         throw new SQLException("Creating tour failed, no ID obtained.");
                     }
                 }
             } catch (SQLException throwables) {
-                // TODO: Logging
+                Log4J.logger.error("Could not insert tour. Error while preparing statement.");
                 throwables.printStackTrace();
             }
 
@@ -89,7 +92,7 @@ public class Database implements DataAccessLayer {
                     }
 
                 } catch (SQLException | IOException | InvalidPathException throwables) {
-                    // TODO: Add logging
+                    Log4J.logger.error("Could not update Tour");
                     throwables.printStackTrace();
                 }
             }
@@ -138,6 +141,11 @@ public class Database implements DataAccessLayer {
     @Override
     public CompletableFuture<Boolean> removeTour(Tour tour) {
         return CompletableFuture.supplyAsync(() -> {
+            try {
+                Thread.sleep((long) Math.random() * 5000 + 2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             try (var stmt = connection.prepareStatement("delete from tour where id = ?")) {
                 if (tour.getTourId() == null) {
                     stmt.setNull(1, Types.INTEGER);
@@ -149,13 +157,12 @@ public class Database implements DataAccessLayer {
                     try {
                         Files.deleteIfExists(Paths.get(tour.getImagePath()));
                     } catch (IOException e ) {
-                        // TODO: Logging
+                        Log4J.logger.warn("Could not delete image while removing a tour: " + e.getMessage());
                         e.printStackTrace();
                     } catch (InvalidPathException e) {
-                        // TODO: Logging
-                        System.err.println("Bild konnte nicht gelöscht werden: " + e.getMessage());
+                        Log4J.logger.warn("Could not delete image while removing a tour: " + e.getMessage());
                     } catch (NullPointerException e) {
-                        System.err.println("Bild konte nicht gelöscht werden - tour besitzt keinen Bildpfad: " + e.getMessage());
+                        Log4J.logger.warn("Could not delete image while removing a tour: " + e.getMessage());
                     }
                 }
                 return affectedRows > 0;
@@ -196,7 +203,7 @@ public class Database implements DataAccessLayer {
                     if (generatedKeys.next()) {
                         return generatedKeys.getLong(1);
                     } else {
-                        // TODO: Logging
+                        Log4J.logger.error("Could not insert tourlog. No ID obtained");
                         throw new SQLException("Creating tour failed, no ID obtained.");
                     }
                 }
@@ -266,6 +273,26 @@ public class Database implements DataAccessLayer {
         });
     }
 
+    @Override
+    public CompletionStage<Boolean> insertTourLogs(int tourID, List<TourLog> tourLogs) {
+        List<CompletableFuture<Long>> cfs = new ArrayList<>();
+
+        for (TourLog tourLog: tourLogs) {
+            cfs.add(insertTourLog(tourLog, tourID));
+        }
+
+        return CompletableFuture.supplyAsync(() -> {
+            CompletableFuture.allOf(cfs.toArray(new CompletableFuture[0]))
+                    .exceptionally(ex -> null)
+                    .join();
+
+            Map<Boolean, List<CompletableFuture>> result =
+                    cfs.stream().collect(Collectors.partitioningBy(CompletableFuture::isCompletedExceptionally));
+            return result.get(true) == null || result.get(true).size() == 0;
+        });
+    }
+
+
     /**
      * Retrieves Tours from the database and returns them in a list.
      * If tours happen to contain tour-logs, such logs will be appended to the tours.
@@ -278,7 +305,7 @@ public class Database implements DataAccessLayer {
 
         return CompletableFuture.supplyAsync(() -> {
             try (var stmt = connection.prepareStatement("""
-                    select id, name, description, distance, start, "end", imagepath from tour""")) {
+                    select id, name, description, distance, start, "end", imagepath from tour order by id""")) {
                 var rsTour = stmt.executeQuery();
                 List<Tour> tourList = new ArrayList<>();
                 while (rsTour.next()) {
@@ -293,7 +320,7 @@ public class Database implements DataAccessLayer {
                     List<TourLog> tourLogs = new ArrayList<>();
                     try (var stmt2 = connection.prepareStatement("""
                             select id, datetime, report, distance, duration, rating, max_incline, average_speed, top_speed, weather, number_of_breaks 
-                            from tourlog where tour = ?""")) {
+                            from tourlog where tour = ? order by datetime desc""")) {
                         stmt2.setInt(1, tour.getTourId());
                         var rs = stmt2.executeQuery();
                         while (rs.next()) {

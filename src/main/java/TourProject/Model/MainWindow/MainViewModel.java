@@ -1,5 +1,6 @@
 package TourProject.Model.MainWindow;
 
+import TourProject.BusinessLayer.Log4J;
 import TourProject.BusinessLayer.TourBusiness;
 import TourProject.BusinessLayer.TourLogBusiness;
 import TourProject.Model.CustomDialog.CustomDialogController;
@@ -18,23 +19,32 @@ import TourProject.Model.editTourLog.TourLogDatetime;
 import TourProject.Model.editTourLog.TourLogDatetimeVM;
 import TourProject.Model.editTourLog.TourLogDuration;
 import TourProject.Model.editTourLog.TourLogDurationVM;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import lombok.Getter;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class MainViewModel implements TourSubscriber, TourLogSubscriber {
@@ -72,6 +82,7 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
 
     public void setupToursListing() {
         toursListing.clear();
+        tourLogs.clear();
         mainBusiness.retrieveTours().thenApplyAsync(tours -> {
             toursListing.addAll(mainBusiness.getTours());
             return null;
@@ -105,7 +116,7 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
             selectedTour.clear();
             return;
         }
-        if (selectedItem.getImagePath() != null) {
+        if (selectedItem.getStart() != null && selectedItem.getEnd() != null && selectedItem.getDistance() != null) {
             setTourStartEnd(selectedItem.getStart(), selectedItem.getEnd(), selectedItem.getDistance());
         }
 
@@ -145,7 +156,7 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
             return;
         }
         Tour temp = selectedTour.get(0);
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Delete tour \""+ temp.getName() + "\"?", ButtonType.YES, ButtonType.NO);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Delete tour \"" + temp.getName() + "\"?", ButtonType.YES, ButtonType.NO);
         alert.showAndWait();
 
         if (alert.getResult() == ButtonType.NO) {
@@ -160,7 +171,7 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
             mainBusiness.removeTour(temp)
                     .handle((tourRemoved, error) -> {
                         dialog.showProcess(false);
-                        // if an error occured, display an error message
+                        // if an error occurred, display an error message
 
                         if (error != null || tourRemoved == null || !tourRemoved) {
                             if (error != null) {
@@ -270,7 +281,7 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
                     .handle((tourLogRemoved, error) -> {
                         dialog.showProcess(false);
 
-                        // if an error occured, display an error message
+                        // if an error occurred, display an error message
                         if (error != null || tourLogRemoved == null || !tourLogRemoved) {
                             if (error != null) {
                                 error.printStackTrace();
@@ -487,7 +498,8 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
     /**
      * Vereinfacht das Updaten von einzelnen TourLog Werten in der TourListing und tourLogs Tableview,
      * indem über Reflection die richtigen Methoden aufgerufen werden
-     * @param tourLog der Tourlog mit den neuen Informationen
+     *
+     * @param tourLog       der Tourlog mit den neuen Informationen
      * @param attributeName der Attributname des TourLogs bestimmt welches Attribut verändert werden soll
      */
     public void updateEditedTour(TourLog tourLog, String attributeName) {
@@ -558,5 +570,80 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
                     }
                     return null;
                 });
+    }
+
+    public void exportToursPDF() {
+        mainBusiness.exportToursPDF(toursListing);
+    }
+
+    public void exportTourPDF() {
+        if (selectedTour.size() <= 0) {
+            CustomDialogController dialog = new CustomDialogController("Pdf creation notice", "Please select a tour before trying to generate a tour report.", true);
+            dialog.showAndWait();
+            return;
+        }
+        mainBusiness.exportTourPDF(selectedTour.get(0));
+    }
+
+    public void importToursJSON(Window w) {
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open JSON File with tours");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON", "*.json"));
+        File file = fileChooser.showOpenDialog(w);
+        CustomDialogController dialog = new CustomDialogController("Importing tours", "Tours are being imported. Please wait till the process is finished.", false);
+        dialog.showProcess(true);
+
+        if (file != null) {
+            Gson gson = new Gson();
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Delete existing tours?", ButtonType.YES, ButtonType.NO);
+            alert.showAndWait();
+
+            try (Reader reader = new FileReader(file)) {
+
+                ArrayList<Tour> toursImport = gson.fromJson(reader, new TypeToken<List<Tour>>() {}.getType());
+
+                mainBusiness.importToursJSON(toursImport, alert.getResult() == ButtonType.YES)
+                        .whenComplete((s, ex) -> {
+                            Platform.runLater(() -> {
+
+                                dialog.showProcess(false);
+                                if (s == null || !s || ex != null) {
+
+                                    dialog.setResult(Boolean.TRUE);
+                                    dialog.close();
+                                    var dialog2 = new CustomDialogController(
+                                            "Import tours error",
+                                            "An error occurred while importing tours. Please restart the application and try again.",
+                                            true);
+                                    dialog2.showAndWait();
+
+                                }
+
+                                setupToursListing();
+                            });
+                        });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            Log4J.logger.warn("Could not read selected file");
+        }
+
+        dialog.show();
+    }
+
+    public void exportToursJSON(ActionEvent event) {
+        if (!mainBusiness.exportToursJSON(event)) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    CustomDialogController dialog = new CustomDialogController("Tours JSON export error", "Could not export tours in JSON format.", true);
+                    dialog.showAndWait();
+                }
+            });
+        }
     }
 }

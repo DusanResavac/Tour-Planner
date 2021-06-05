@@ -1,5 +1,6 @@
 package TourProject.DataAccessLayer.API;
 
+import TourProject.BusinessLayer.Log4J;
 import TourProject.DataAccessLayer.Config;
 import TourProject.Model.api.RequestBody;
 import TourProject.Model.api.TourInformation;
@@ -44,7 +45,7 @@ public class MapQuest implements TourAPI {
                     Gson gson = new Gson();
                     var requestBody = gson.fromJson(response, RequestBody.class);
                     if (requestBody == null || requestBody.route == null || requestBody.route.getSessionId() == null) {
-                        // TODO: Logging
+                        Log4J.logger.warn("Could not retrieve route information from API");
                         throw new NullPointerException("RequestBody and properties must not be null");
                     }
 
@@ -77,7 +78,7 @@ public class MapQuest implements TourAPI {
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofByteArray())
                 .thenApply((response) -> {
                     if (response.statusCode() != 200) {
-                        // TODO: Logging
+                        Log4J.logger.warn("Could not retrieve tour image from API");
                         throw new NullPointerException("Error while retrieving route-image occurred.");
                     }
                     return response.body();

@@ -11,7 +11,7 @@ public class Config {
 
     public static Config instance = null;
     private ConfigFile configFile = null;
-    public static final String configPath = "src/TourProject/config.json";
+    public static final String configPath = "src/main/java/TourProject/config.json";
 
     private Config() {}
 

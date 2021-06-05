@@ -20,4 +20,6 @@ public interface DataAccessLayer {
     CompletableFuture<Boolean> updateTourLog(TourLog tourLog);
 
     CompletionStage<Boolean> removeTourLog(TourLog selectedTourLog);
+
+    CompletionStage<Boolean> insertTourLogs(int tourID, List<TourLog> tourLogs);
 }

@@ -1,6 +1,13 @@
 package TourProject;
 
 import TourProject.DataAccessLayer.Config;
+import com.itextpdf.io.font.constants.StandardFonts;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;

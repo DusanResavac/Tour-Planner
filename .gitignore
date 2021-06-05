@@ -7,3 +7,6 @@ config.json
 lib
 Tour-Planner.iml
 *.pdf
+target
+logs.log
+*.json

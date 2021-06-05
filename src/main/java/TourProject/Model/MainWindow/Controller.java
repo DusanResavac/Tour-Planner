@@ -1,6 +1,6 @@
 package TourProject.Model.MainWindow;
 
-import TourProject.DataAccessLayer.Config;
+import TourProject.BusinessLayer.Log4J;
 import TourProject.Model.Tour.Tour;
 import TourProject.Model.TourLog.TourLog;
 import javafx.collections.ListChangeListener;
@@ -18,12 +18,8 @@ import javafx.scene.layout.Pane;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ResourceBundle;
@@ -243,7 +239,7 @@ public class Controller implements Initializable {
     }
 
     public void tourLogListener (ListChangeListener.Change<? extends TourLog> change) {
-        System.out.println("Selection changed (TourLog): " + change.getList());
+        Log4J.logger.info("Selection changed (TourLog): " + change.getList());
         viewModel.getSelectedTourLog().clear();
         if (change.getList().size() == 1) {
             viewModel.getSelectedTourLog().add(change.getList().get(0));
@@ -252,28 +248,31 @@ public class Controller implements Initializable {
     }
 
     public void tourListener (ListChangeListener.Change<? extends Tour> change) {
-        System.out.println("Selection changed: " + change.getList());
+        Log4J.logger.info("Selection changed: " + change.getList());
         if (change.getList().size() == 1) {
             viewModel.setSelectedTour((Tour) change.getList().get(0));
 
             tourLogs.setItems(viewModel.getTourLogs());
             var selectedTour = viewModel.getSelectedTour().size() > 0 ? viewModel.getSelectedTour().get(0) : null;
 
-            if (selectedTour != null && selectedTour.getImagePath() != null) {
-                System.out.println("Change image");
+            if (selectedTour != null) {
 
-                String path;
-                if (selectedTour.getImagePath().startsWith("http")) {
-                    path = selectedTour.getImagePath();
+                if (selectedTour.getImagePath() != null) {
+                    String path;
+                    if (selectedTour.getImagePath().startsWith("http")) {
+                        path = selectedTour.getImagePath();
+                    } else {
+                        path = "file:@../../" + selectedTour.getImagePath();
+                    }
+
+                    tourImage.setImage(new Image(path));
+                    tourImage.fitWidthProperty().bind(tourImageTab.widthProperty());
+                    tourImage.fitHeightProperty().bind(tourImageTab.heightProperty());
+                    tourImageTab.minHeightProperty().bind(tourImageScrollPane.heightProperty());
+                    tourImage.maxWidth(500);
                 } else {
-                    path = "file:@../../" + selectedTour.getImagePath();
+                    tourImage.setImage(null);
                 }
-
-                tourImage.setImage(new Image(path));
-                tourImage.fitWidthProperty().bind(tourImageTab.widthProperty());
-                tourImage.fitHeightProperty().bind(tourImageTab.heightProperty());
-                tourImageTab.minHeightProperty().bind(tourImageScrollPane.heightProperty());
-                tourImage.maxWidth(500);
             }
         } else {
             viewModel.setSelectedTour(null);
@@ -311,15 +310,19 @@ public class Controller implements Initializable {
         viewModel.editTourLog();
     }
 
-    public void exportTours(ActionEvent actionEvent) {
-        try {
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void exportToursPDF(ActionEvent actionEvent) {
+        viewModel.exportToursPDF();
     }
 
-    public void exportTour(ActionEvent actionEvent) {
+    public void exportTourPDF(ActionEvent actionEvent) {
+        viewModel.exportTourPDF();
+    }
 
+    public void importToursJSON(ActionEvent actionEvent) {
+        viewModel.importToursJSON(inputSearch.getScene().getWindow());
+    }
+
+    public void exportToursJSON(ActionEvent actionEvent) {
+        viewModel.exportToursJSON(actionEvent);
     }
 }

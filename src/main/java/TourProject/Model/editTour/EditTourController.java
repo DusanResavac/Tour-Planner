@@ -1,6 +1,7 @@
 package TourProject.Model.editTour;
 
 
+import TourProject.BusinessLayer.Log4J;
 import TourProject.Model.Tour.TourController;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -15,7 +16,7 @@ public class EditTourController extends TourController implements Initializable 
     private EditTourViewModel viewModel;
 
     public EditTourController(EditTourViewModel viewModel) {
-        System.out.println("TourProject.EditTourController created");
+        Log4J.logger.info("TourProject.EditTourController created");
         this.viewModel = viewModel;
         super.setViewModel(viewModel);
     }
@@ -23,7 +24,7 @@ public class EditTourController extends TourController implements Initializable 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Platform.setImplicitExit(false);
-        System.out.println("TourProject.EditTourController init");
+        Log4J.logger.info("TourProject.EditTourController init");
         super.setup();
         super.setRouteMessage("Strecke - ACHTUNG: Beides leer lassen, wenn es nicht geändert werden soll");
     }

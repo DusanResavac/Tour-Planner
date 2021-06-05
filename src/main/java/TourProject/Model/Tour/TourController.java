@@ -14,6 +14,7 @@ public abstract class TourController {
     public TextArea tourDescription;
     public TextField startpunkt;
     public TextField endpunkt;
+    public CheckBox openAICheckbox;
     public ProgressIndicator progress;
 
     public Label routeMessage;

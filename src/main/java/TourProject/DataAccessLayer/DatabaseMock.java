@@ -52,4 +52,10 @@ public class DatabaseMock implements DataAccessLayer {
     public CompletionStage<Boolean> removeTourLog(TourLog selectedTourLog) {
         return null;
     }
+
+    @Override
+    public CompletionStage<Boolean> insertTourLogs(int tourID, List<TourLog> tourLogs) {
+        return null;
+    }
+
 }

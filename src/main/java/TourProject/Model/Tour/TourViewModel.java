@@ -1,6 +1,7 @@
 package TourProject.Model.Tour;
 
 import TourProject.BusinessLayer.ITourBusiness;
+import TourProject.BusinessLayer.Log4J;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 
@@ -55,7 +56,7 @@ public abstract class TourViewModel {
                             error.printStackTrace();
                         }
                         if (insertedOrUpdatedTour == null) {
-                            System.err.println(insert ?
+                            Log4J.logger.error(insert ?
                                     "Fehler beim Hinzufügen der Tour aufgetreten." :
                                     "Fehler beim Verändern der Tour aufgetreten.");
                         }

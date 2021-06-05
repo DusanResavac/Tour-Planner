@@ -60,7 +60,7 @@ values (1, '2021-05-05 08:20:00', 'was a bit weary', 62.0, 60 * 60 * 10, 7, 25, 
        (3, '2021-04-24 10:00:00', 'great ride', 20.2, 60 * 60 * 2.5, 9, 7, 15.0, 20.0, 'sunny', 2);
 
 
-select * from "tour";
+select * from tour;
 select * from "tourlog";
 
 /*update tour set  name = COALESCE(NULL, name),

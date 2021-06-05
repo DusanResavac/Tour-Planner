@@ -4,6 +4,7 @@
   "reports_folder": "YOUR FOLDER",
   "json_export_folder": "exports/",
   "api_key": "YOUR KEY",
+  "openai_key": "YOUR OpenAPI Key",
   "database": "Postgres" {Postgres, Mock},
   "database_url": "jdbc:postgresql://localhost:5432/tour",
   "database_user": "postgres",

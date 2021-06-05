@@ -9,8 +9,6 @@ import TourProject.Model.FilterCondition;
 import TourProject.Model.Tour.Tour;
 import TourProject.Model.TourLog.TourLog;
 import com.google.gson.Gson;
-import com.google.gson.JsonIOException;
-import com.google.gson.reflect.TypeToken;
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.font.PdfFont;
@@ -21,22 +19,11 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.*;
-import com.itextpdf.layout.property.HorizontalAlignment;
-import com.itextpdf.layout.property.UnitValue;
+import com.itextpdf.layout.element.Image;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.MenuItem;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import javafx.stage.Window;
-import lombok.Getter;
 
+import java.awt.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -266,6 +253,7 @@ public class MainBusiness {
 
                 //Close document
                 document.close();
+                Desktop.getDesktop().open(new File(filepath));
             } catch (Exception e) {
                 Log4J.logger.error("PDF Tours summary error");
                 e.printStackTrace();
@@ -353,6 +341,7 @@ public class MainBusiness {
                         .add(tourLogTable);
                 document.close();
 
+                Desktop.getDesktop().open(new File(filepath));
             } catch (Exception e) {
                 Log4J.logger.error("PDF Tours summary error");
                 e.printStackTrace();

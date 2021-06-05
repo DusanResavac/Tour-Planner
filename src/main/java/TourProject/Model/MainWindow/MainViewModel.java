@@ -404,10 +404,10 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
 
     @Override
     public void updateAddedTour(Tour tour) {
-        toursListing.add(tour);
-
+        /*toursListing.add(tour);
         mainBusiness.getTours().clear();
-        mainBusiness.getTours().addAll(toursListing);
+        mainBusiness.getTours().addAll(toursListing);*/
+        setupToursListing();
     }
 
     @Override
@@ -428,9 +428,10 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
     }
 
     @Override
-    public Tour updateEditedTour(Tour tour) {
+    public void updateEditedTour(Tour tour) {
         // TODO: Neuladen oder Anpassen
-        for (int i = 0; i < toursListing.size(); i++) {
+        setupToursListing();
+        /*for (int i = 0; i < toursListing.size(); i++) {
             Tour t = toursListing.get(i);
             if (t.getTourId().equals(tour.getTourId())) {
                 Tour.TourBuilder temp = new Tour().builder();
@@ -465,7 +466,7 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
 
         mainBusiness.getTours().clear();
         mainBusiness.getTours().addAll(toursListing);
-        return null;
+        return null;*/
     }
 
     @Override

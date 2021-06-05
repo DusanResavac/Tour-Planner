@@ -4,6 +4,7 @@ import TourProject.BusinessLayer.ITourBusiness;
 import TourProject.BusinessLayer.Log4J;
 import javafx.application.Platform;
 import javafx.beans.property.*;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
@@ -17,6 +18,8 @@ public abstract class TourViewModel {
     public BooleanProperty isBusy = new SimpleBooleanProperty(false);
     public BooleanProperty invalidForm = new SimpleBooleanProperty(false);
     public BooleanProperty routeError = new SimpleBooleanProperty(false);
+    @Getter
+    public final BooleanProperty openAICheckbox = new SimpleBooleanProperty(false);
     private ITourBusiness tourBusiness = null;
     private Tour selectedTour;
 
@@ -50,34 +53,55 @@ public abstract class TourViewModel {
                 tourBusiness.updateTour(tour, true);
 
         return tourAction
-                .handle((insertedOrUpdatedTour, error) -> {
-                    if (error != null || insertedOrUpdatedTour == null) {
-                        if (error != null) {
-                            error.printStackTrace();
-                        }
-                        if (insertedOrUpdatedTour == null) {
-                            Log4J.logger.error(insert ?
-                                    "Fehler beim Hinzufügen der Tour aufgetreten." :
-                                    "Fehler beim Verändern der Tour aufgetreten.");
-                        }
+                .thenCompose(insertedOrUpdatedTour -> {
+                    if (insertedOrUpdatedTour == null) {
+                        Log4J.logger.error(insert ?
+                                "Fehler beim Hinzufügen der Tour aufgetreten." :
+                                "Fehler beim Verändern der Tour aufgetreten.");
+                        return CompletableFuture.failedFuture(new NullPointerException("Tour could not be updated/inserted"));
+                    } else if (openAICheckbox.get()) {
+                        // if OpenAI Checkbox was selected, try to access the api and update the description of the tour
+                        Tour temp = new Tour().builder()
+                                .setTourId(insertedOrUpdatedTour.getTourId())
+                                .setDescription(insertedOrUpdatedTour.getDescription())
+                                .setStart(insertedOrUpdatedTour.getStart() == null ? selectedTour.getStart() : insertedOrUpdatedTour.getStart())
+                                .setEnd(insertedOrUpdatedTour.getEnd() == null ? selectedTour.getEnd() : insertedOrUpdatedTour.getEnd())
+                                .build();
+                        return tourBusiness.generateDescription(temp)
+                                .thenCompose(description -> {
+                                    if (description != null) {
+                                        Tour t = (Tour) insertedOrUpdatedTour.clone();
+                                        t.setDescription(description);
+                                        t.setImagePath(null);
+                                        return tourBusiness.updateTour(t, false);
+                                    }
+                                    return CompletableFuture.failedFuture(new NullPointerException("No Tour description generated"));
+                                });
+                    }
+
+                    return CompletableFuture.completedFuture(insertedOrUpdatedTour);
+                })
+                .handle((insertedOrUpdatedTour, ex) -> {
+                    if (insertedOrUpdatedTour == null || ex != null) {
                         routeError.set(true);
                         isBusy.set(false);
                         checkFormValidity();
                         return false;
                     }
 
-                    getSubscribers().forEach(sub -> {
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            getSubscribers().forEach(sub -> {
                                 if (insert) {
                                     sub.updateAddedTour(insertedOrUpdatedTour);
                                 } else {
                                     sub.updateEditedTour(insertedOrUpdatedTour);
                                 }
-                            }
-                        });
+                            });
+                        }
                     });
+
                     isBusy.set(false);
                     checkFormValidity();
                     return true;

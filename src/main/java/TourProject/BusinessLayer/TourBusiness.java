@@ -1,15 +1,22 @@
 package TourProject.BusinessLayer;
 
+import TourProject.DataAccessLayer.API.OpenAI;
 import TourProject.DataAccessLayer.API.TourAPI;
 import TourProject.DataAccessLayer.API.TourAPILoader;
 import TourProject.DataAccessLayer.Config;
 import TourProject.DataAccessLayer.DataAccessLayer;
 import TourProject.DataAccessLayer.DatabaseLoader;
 import TourProject.Model.Tour.Tour;
+import TourProject.Model.api.OpenAIRequest;
 import TourProject.Model.api.TourInformation;
+import com.google.gson.Gson;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
@@ -82,6 +89,20 @@ public class TourBusiness implements ITourBusiness {
                 .thenApply(successful -> {
                     return successful ? tour : null;
                 });
+    }
+
+    @Override
+    public CompletableFuture<String> generateDescription(Tour tour) {
+        String description = tour.getDescription() == null || tour.getDescription().length() == 0 ?
+                "" :
+                tour.getDescription().substring(0, Math.min(tour.getDescription().length(), 180));
+
+        String input = String.format("from %s to %s, %s\\n",
+                tour.getStart(),
+                tour.getEnd(),
+                description);
+
+        return OpenAI.generateDescription(input);
     }
 
     public CompletableFuture<Tour> retrieveAndSaveRouteImage (TourInformation tourInformation, Tour tour) {

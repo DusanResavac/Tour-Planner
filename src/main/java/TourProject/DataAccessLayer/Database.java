@@ -141,11 +141,6 @@ public class Database implements DataAccessLayer {
     @Override
     public CompletableFuture<Boolean> removeTour(Tour tour) {
         return CompletableFuture.supplyAsync(() -> {
-            try {
-                Thread.sleep((long) Math.random() * 5000 + 2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             try (var stmt = connection.prepareStatement("delete from tour where id = ?")) {
                 if (tour.getTourId() == null) {
                     stmt.setNull(1, Types.INTEGER);

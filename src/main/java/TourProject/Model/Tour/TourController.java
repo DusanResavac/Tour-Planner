@@ -36,6 +36,7 @@ public abstract class TourController {
         progress.visibleProperty().bindBidirectional(viewModel.getIsBusyProperty());
         tourName.textProperty().bindBidirectional(viewModel.getTourName());
         tourDescription.textProperty().bindBidirectional(viewModel.getTourDescription());
+        openAICheckbox.selectedProperty().bindBidirectional(viewModel.getOpenAICheckbox());
 
         tourName.textProperty().addListener((observable, oldValue, newValue) -> {
             //System.out.println("TourName new value: " + newValue);

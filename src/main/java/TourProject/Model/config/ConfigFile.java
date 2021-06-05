@@ -3,6 +3,7 @@ package TourProject.Model.config;
 public class ConfigFile {
     public String api_key;
     public String api_service;
+    public String openai_key;
     public String database;
     public String route_image_folder;
     public String reports_folder;
@@ -16,6 +17,7 @@ public class ConfigFile {
         return "ConfigFile{" +
                 "api_key='" + api_key + '\'' +
                 ", api_service='" + api_service + '\'' +
+                ", openai_key='" + openai_key + '\'' +
                 ", database='" + database + '\'' +
                 ", route_image_folder='" + route_image_folder + '\'' +
                 ", reports_folder='" + reports_folder + '\'' +

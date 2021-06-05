@@ -3,6 +3,7 @@ package TourProject.Model.MainWindow;
 import TourProject.BusinessLayer.Log4J;
 import TourProject.BusinessLayer.TourBusiness;
 import TourProject.BusinessLayer.TourLogBusiness;
+import TourProject.DataAccessLayer.Config;
 import TourProject.Model.CustomDialog.CustomDialogController;
 import TourProject.Model.TourLog.TourLogController;
 import TourProject.Model.TourLog.TourLogSubscriber;
@@ -37,6 +38,7 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import lombok.Getter;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -44,6 +46,7 @@ import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -574,7 +577,23 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
     }
 
     public void exportToursPDF() {
-        mainBusiness.exportToursPDF(toursListing);
+        try {
+            mainBusiness.exportToursPDF(toursListing, Config.getInstance().getAttribute("reports_folder") + "tours-summary.pdf")
+                    .whenComplete((filePath, ex) -> {
+                        if (filePath == null) {
+                            CustomDialogController dialog = new CustomDialogController("Pdf creation error", "An error occurred while the pdf was being generated.", true);
+                            dialog.showAndWait();
+                        } else {
+                            try {
+                                Desktop.getDesktop().open(new File(filePath));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void exportTourPDF() {
@@ -583,7 +602,24 @@ public class MainViewModel implements TourSubscriber, TourLogSubscriber {
             dialog.showAndWait();
             return;
         }
-        mainBusiness.exportTourPDF(selectedTour.get(0));
+        Tour t = selectedTour.get(0);
+        try {
+            mainBusiness.exportTourPDF(t, Config.getInstance().getAttribute("reports_folder") + "tour_" + t.getTourId() + "-report.pdf")
+                    .whenComplete((filePath, ex) -> {
+                        if (filePath == null) {
+                            CustomDialogController dialog = new CustomDialogController("Pdf creation error", "An error occurred while the pdf was being generated.", true);
+                            dialog.showAndWait();
+                        } else {
+                            try {
+                                Desktop.getDesktop().open(new File(filePath));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void importToursJSON(Window w) {

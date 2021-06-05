@@ -4,7 +4,6 @@ import TourProject.DataAccessLayer.Config;
 import TourProject.DataAccessLayer.DataAccessLayer;
 import TourProject.DataAccessLayer.DatabaseLoader;
 import TourProject.Model.Comparison;
-import TourProject.Model.CustomDialog.CustomDialogController;
 import TourProject.Model.FilterCondition;
 import TourProject.Model.Tour.Tour;
 import TourProject.Model.TourLog.TourLog;
@@ -20,12 +19,9 @@ import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.element.Image;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import lombok.Getter;
 
-import java.awt.*;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,6 +38,7 @@ import java.util.stream.Collectors;
 public class MainBusiness {
     private final List<Tour> tours = new ArrayList<>();
     private Tour selectedTour;
+    @Getter
     private final DataAccessLayer dataAccessLayer;
 
     public MainBusiness() {
@@ -200,10 +197,10 @@ public class MainBusiness {
         return dataAccessLayer.removeTourLog(selectedTourLog);
     }
 
-    public void exportToursPDF(List<Tour> tours) {
-        var thread = new Thread(() -> {
+    public CompletableFuture<String> exportToursPDF(List<Tour> tours, String filepath) {
+        return CompletableFuture.supplyAsync(() -> {
             try {
-                String filepath = Config.getInstance().getAttribute("reports_folder") + "tours-summary.pdf";
+
                 Files.deleteIfExists(Path.of(filepath));
 
                 int toursTotalTime = 0;
@@ -253,27 +250,18 @@ public class MainBusiness {
 
                 //Close document
                 document.close();
-                Desktop.getDesktop().open(new File(filepath));
+                return filepath;
             } catch (Exception e) {
-                Log4J.logger.error("PDF Tours summary error");
-                e.printStackTrace();
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        CustomDialogController dialog = new CustomDialogController("Pdf creation error", "An error occurred while the pdf was being generated.", true);
-                        dialog.showAndWait();
-                    }
-                });
+                Log4J.logger.error("PDF Tours summary error: " + e.getMessage());
             }
+
+            return null;
         });
-        thread.start();
     }
 
-    public void exportTourPDF(Tour tour) {
-        var thread = new Thread(() -> {
+    public CompletableFuture<String> exportTourPDF(Tour tour, String filepath) {
+        return CompletableFuture.supplyAsync(() -> {
             try {
-                String filepath = Config.getInstance().getAttribute("reports_folder") + "tour_" + tour.getTourId() + "-report.pdf";
                 Files.deleteIfExists(Path.of(filepath));
 
                 PdfWriter writer = new PdfWriter(filepath);
@@ -340,24 +328,16 @@ public class MainBusiness {
                         .add(tourInfoTable)
                         .add(tourLogTable);
                 document.close();
-
-                Desktop.getDesktop().open(new File(filepath));
+                return filepath;
             } catch (Exception e) {
-                Log4J.logger.error("PDF Tours summary error");
-                e.printStackTrace();
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        CustomDialogController dialog = new CustomDialogController("Pdf creation error", "An error occurred while the pdf was being generated.", true);
-                        dialog.showAndWait();
-                    }
-                });
+                Log4J.logger.error("PDF Tours summary error: " + e.getMessage());
             }
+
+            return null;
         });
-        thread.start();
     }
 
-    public CompletionStage<Boolean> importToursJSON(List<Tour> toursToImport, boolean deleteExistingTours) {
+    public CompletableFuture<Boolean> importToursJSON(List<Tour> toursToImport, boolean deleteExistingTours) {
 
         if (deleteExistingTours) {
             List<CompletableFuture<Boolean>> completableFutures = new ArrayList<>();

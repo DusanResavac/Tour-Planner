@@ -42,7 +42,6 @@ public class Database implements DataAccessLayer {
 
     @Override
     public CompletableFuture<Long> insertTour(Tour tour) {
-        // TODO: Insert tour (even if image is not given)
         return CompletableFuture.supplyAsync(() -> {
 
             try (PreparedStatement stmt = connection.prepareStatement("insert into tour (name, description, distance, start, \"end\", imagePath) values (?, ?, ?, ?, ?, null)", Statement.RETURN_GENERATED_KEYS)) {

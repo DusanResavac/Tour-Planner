@@ -2,6 +2,8 @@ package TourProject.DataAccessLayer;
 
 import TourProject.Model.config.ConfigFile;
 import com.google.gson.Gson;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,9 +13,15 @@ public class Config {
 
     public static Config instance = null;
     private ConfigFile configFile = null;
-    public static final String configPath = "src/main/java/TourProject/config.json";
+    @Getter @Setter
+    private static String configPath = "src/main/java/TourProject/config.json";
 
     private Config() {}
+
+    public static Config getInstance(String configPath) {
+        setConfigPath(configPath);
+        return getInstance();
+    }
 
     public static Config getInstance() {
         if (instance == null) {

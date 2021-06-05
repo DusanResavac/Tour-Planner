@@ -51,16 +51,7 @@ public class MapQuest implements TourAPI {
 
                     return (TourInformation) requestBody.route;
                 });
-                /*.thenCompose(tourInformation -> {
-                    return getRouteImage(tourInformation.getSessionId(), client)
-                            .thenApply((imagePath) -> {
-                                //tourInformation.setImagePath(imagePath);
-                                return tourInformation;
-                            });
-                });*/
-
-
-    }
+            }
 
     public CompletableFuture<byte[]> getRouteImage(String sessionId, int tourId) {
 

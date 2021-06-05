@@ -15,7 +15,7 @@ public class FilterCondition {
     );
     private final Map<String, Datatype> attributeDatatypeMapper = Map.ofEntries(
         Map.entry("rating", Datatype.INTEGER),
-        Map.entry("breaks", Datatype.DOUBLE),
+        Map.entry("breaks", Datatype.INTEGER),
         Map.entry("distance", Datatype.DOUBLE)
     );
 

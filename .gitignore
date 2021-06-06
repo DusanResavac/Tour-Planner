@@ -3,10 +3,10 @@ out
 Projekt.iml
 src/sample
 *.jpg
-config.json
+**/TourProject/**/config.json
 lib
 Tour-Planner.iml
 *.pdf
 target
 logs.log
-*.json
+exports

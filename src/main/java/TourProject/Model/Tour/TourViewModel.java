@@ -35,7 +35,7 @@ public abstract class TourViewModel {
 
     public abstract CompletableFuture<Boolean> saveChanges();
 
-    protected CompletableFuture<Boolean> updateOrInsertTour(boolean insert) {
+    public CompletableFuture<Boolean> updateOrInsertTour(boolean insert, boolean updateSubscriber) {
         routeError.set(false);
         invalidForm.set(true);
         isBusy.set(true);
@@ -89,18 +89,20 @@ public abstract class TourViewModel {
                         return false;
                     }
 
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            getSubscribers().forEach(sub -> {
-                                if (insert) {
-                                    sub.updateAddedTour(insertedOrUpdatedTour);
-                                } else {
-                                    sub.updateEditedTour(insertedOrUpdatedTour);
-                                }
-                            });
-                        }
-                    });
+                    if (updateSubscriber) {
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                getSubscribers().forEach(sub -> {
+                                    if (insert) {
+                                        sub.updateAddedTour(insertedOrUpdatedTour);
+                                    } else {
+                                        sub.updateEditedTour(insertedOrUpdatedTour);
+                                    }
+                                });
+                            }
+                        });
+                    }
 
                     isBusy.set(false);
                     checkFormValidity();

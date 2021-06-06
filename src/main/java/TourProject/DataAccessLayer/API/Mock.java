@@ -8,16 +8,15 @@ import java.util.concurrent.CompletableFuture;
 
 public class Mock implements TourAPI {
 
-    int counter = 1;
 
     @Override
     public CompletableFuture<TourInformation> getRouteInformation(String start, String end) {
-        if (start == null || end == null || start.equals("") || end.equals("")) {
+        if (start == null || end == null || start.equals("") || end.equals("") ||
+                start.length() < 3 || end.length() < 3) {
             return CompletableFuture.failedFuture(
                     new IllegalArgumentException("Start- und Endpunkt müssen angegeben werden"));
         }
         TourInformation tourInformation = new TourInformation();
-        tourInformation.setTourId(counter++);
         tourInformation.setDistance(25.0);
         tourInformation.setSessionId((long) (Math.random() * 1_000_000_000) + "");
         tourInformation.setImagePath(start + "_to_" + end + ".jpg");
@@ -35,7 +34,7 @@ public class Mock implements TourAPI {
     public CompletableFuture<byte[]> getRouteImage(String sessionId, int tourId) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                Thread.sleep(100);
+                Thread.sleep(20);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -9,7 +9,7 @@ public class EditTourViewModel extends TourViewModel {
 
     @Override
     public CompletableFuture<Boolean> saveChanges() {
-        return updateOrInsertTour(false);
+        return updateOrInsertTour(false, true);
     }
 
     @Override

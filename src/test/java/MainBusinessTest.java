@@ -1,5 +1,6 @@
 import TourProject.BusinessLayer.MainBusiness;
 import TourProject.DataAccessLayer.Config;
+import TourProject.DataAccessLayer.DatabaseLoader;
 import TourProject.Model.Tour.Tour;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +26,6 @@ public class MainBusinessTest {
     public static void setup() {
         c = Config.getInstance("src/test/config.json");
 
-        business = new MainBusiness();
         try {
             File folder = new File("./testPDFs");
 
@@ -47,6 +47,8 @@ public class MainBusinessTest {
 
     @BeforeEach
     public void setupBeforeEach() {
+        DatabaseLoader.getInstance().getDataAccessLayer().retrieveData(true).join();
+        business = new MainBusiness();
         business.retrieveTours().join();
     }
 
@@ -112,8 +114,7 @@ public class MainBusinessTest {
 
         // ASSERT
         assertTrue(success);
-        // Tour hat keine ID
-        assertFalse(success2);
+        assertTrue(success2);
         assertTrue(success3);
         assertTrue(success4);
         assertTrue(success5);

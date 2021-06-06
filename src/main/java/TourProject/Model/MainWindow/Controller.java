@@ -239,7 +239,7 @@ public class Controller implements Initializable {
     }
 
     public void tourLogListener (ListChangeListener.Change<? extends TourLog> change) {
-        Log4J.logger.info("Selection changed (TourLog): " + change.getList());
+        Log4J.logger.debug("Selection changed (TourLog): " + change.getList());
         viewModel.getSelectedTourLog().clear();
         if (change.getList().size() == 1) {
             viewModel.getSelectedTourLog().add(change.getList().get(0));
@@ -248,7 +248,7 @@ public class Controller implements Initializable {
     }
 
     public void tourListener (ListChangeListener.Change<? extends Tour> change) {
-        Log4J.logger.info("Selection changed: " + change.getList());
+        Log4J.logger.debug("Selection changed: " + change.getList());
         if (change.getList().size() == 1) {
             viewModel.setSelectedTour((Tour) change.getList().get(0));
 

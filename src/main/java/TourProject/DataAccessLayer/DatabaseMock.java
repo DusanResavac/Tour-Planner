@@ -11,15 +11,15 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 public class DatabaseMock implements DataAccessLayer {
-    public Long idCounter = 1L;
+    public Long idCounter = 4L;
     public Long tourLogIdCounter = 1L;
-    public List<Tour> tourList;
+    public List<Tour> tourList = new ArrayList<>();
 
     @Override
     public CompletableFuture<Long> insertTour(Tour tour) {
-        if (tour.getTourId() == null) {
-            return CompletableFuture.failedFuture(new SQLException("Creating tour failed, no ID obtained."));
-        }
+        Tour temp = (Tour) tour.clone();
+        temp.setTourId(Math.toIntExact(idCounter));
+        tourList.add(temp);
         return CompletableFuture.completedFuture(idCounter++);
     }
 
@@ -28,7 +28,15 @@ public class DatabaseMock implements DataAccessLayer {
         if (tour.getTourId() == null) {
             return CompletableFuture.failedFuture(new SQLException("Updating tour failed, no ID provided."));
         }
-        return CompletableFuture.completedFuture(true);
+        // Affected Rows ist im Original nur > 0, wenn mindestens eine tour geupdated wurde
+        // (sie also mit der TourId existiert)
+        for (Tour t: tourList) {
+            if (t.getTourId().equals(tour.getTourId())) {
+                return CompletableFuture.completedFuture(true);
+            }
+        }
+
+        return CompletableFuture.completedFuture(false);
     }
 
     @Override
@@ -67,6 +75,7 @@ public class DatabaseMock implements DataAccessLayer {
             if (alsoSetData) {
                 setTourList(tours);
             }
+            idCounter = 4L;
 
             return tours;
         });

@@ -1,5 +1,6 @@
 import TourProject.BusinessLayer.TourBusiness;
 import TourProject.DataAccessLayer.Config;
+import TourProject.DataAccessLayer.DatabaseLoader;
 import TourProject.Model.Tour.Tour;
 import TourProject.Model.api.TourInformation;
 import org.junit.jupiter.api.BeforeAll;
@@ -23,9 +24,6 @@ public class TourBusinessTest {
     @BeforeAll
     public static void setup() {
         c = Config.getInstance("src/test/config.json");
-
-        business = new TourBusiness();
-
     }
 
     @BeforeEach
@@ -44,6 +42,8 @@ public class TourBusinessTest {
             folder.delete();
 
             Files.createDirectories(Path.of("./testImages/"));
+            DatabaseLoader.getInstance().getDataAccessLayer().retrieveData(true).join();
+            business = new TourBusiness();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -143,4 +143,5 @@ public class TourBusinessTest {
         assertEquals(t, tRes);
         assertEquals(t2, t2Res);
     }
+
 }

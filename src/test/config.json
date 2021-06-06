@@ -1,0 +1,12 @@
+{
+  "api_service": "Mock",
+  "route_image_folder": "testImages",
+  "reports_folder": "reports/",
+  "json_export_folder": "exports/",
+  "api_key": "WRONG KEY",
+  "openai_key": "WRONG KEY",
+  "database": "Mock",
+  "database_url": "DATABASE URL",
+  "database_user": "USER",
+  "database_password": "PASSWORD"
+}

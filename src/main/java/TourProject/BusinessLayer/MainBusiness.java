@@ -137,7 +137,6 @@ public class MainBusiness {
                     addedTour = true;
                     break;
                 } else if (conditions.size() > 0) {
-
                     // Es müssen alle Filter passen, damit ein TourLog die Kriterien erfüllt
                     boolean passesAllFilters = true;
 
@@ -183,7 +182,7 @@ public class MainBusiness {
     public CompletableFuture<Boolean> removeTour(Tour tour) {
         // TODO: Remove artificial loading time
         try {
-            Thread.sleep(2000);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

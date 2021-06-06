@@ -10,7 +10,7 @@ public class AddTourViewModel extends TourViewModel {
 
     @Override
     public CompletableFuture<Boolean> saveChanges() {
-        return updateOrInsertTour(true);
+        return updateOrInsertTour(true, true);
     }
 
     @Override
